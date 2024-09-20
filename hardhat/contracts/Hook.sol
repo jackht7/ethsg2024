@@ -4,20 +4,31 @@ pragma solidity ^0.8.27;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./interfaces/ISnaptureNFT.sol";
 
 contract Hook is Ownable, ReentrancyGuard {
     // USDC address
     address public usdc;
+    address public nft;
+
+    struct Job {
+        uint jobId;
+        string description;
+        string metadata;
+        address contractor;
+    }
 
     struct Project {
         uint projectId;
         string description;
         uint amount;
+        Job[] jobs;
+        uint8 action; // 0 = terminated, 1 = created
     }
 
-    // array of projects
-    Project[] public projects;
-    uint public projectCount;
+    mapping(uint => Project) public projects;
+    uint public nextProjectId;
+    uint public nextJobId;
 
     event Deposit(address indexed user, uint projectId, uint256 amount);
     event Withdrawn(
@@ -31,36 +42,69 @@ contract Hook is Ownable, ReentrancyGuard {
         uint indexed projectId,
         uint indexed jobId,
         string description,
-        string metadata
+        string metadata,
+        address contractor
     );
-    event ProjectTerminated(uint indexed projectId);
+    event ProjectTerminated(uint indexed projectId, uint amount);
 
-    constructor(address _usdc) Ownable(msg.sender) {
-        // set USDC address
+    constructor(address _nft, address _usdc) Ownable(msg.sender) {
+        nft = _nft;
         usdc = _usdc;
     }
 
-    function createProject(
-        uint projectId,
-        string calldata description,
-        uint amount
-    ) external {
-        // create project
-        projects.push(Project(projectId, description, amount));
-        projectCount++;
+    // Add a new project
+    function createProject(string memory _description, uint _amount) public {
+        Project storage project = projects[nextProjectId];
+        project.projectId = nextProjectId;
+        project.description = _description;
+        project.amount = _amount;
+        project.action = 1;
 
-        emit ProjectCreated(projectId, amount);
+        // transfer USDC to contract
+        IERC20(usdc).transferFrom(msg.sender, address(this), _amount);
+
+        // Emit ProjectCreated event
+        emit ProjectCreated(nextProjectId, _amount);
+
+        nextProjectId++;
     }
 
-    function createJob(
-        uint projectId,
-        uint jobId,
-        string calldata description,
-        string calldata metadata
-    ) external {
-        // create job
+    function terminateProject(uint projectId) external onlyOwner {
+        require(projectId < nextProjectId, "Project does not exist.");
+        Project storage project = projects[projectId];
+        project.action = 0;
 
-        emit JobCreated(projectId, jobId, description, metadata);
+        // transfer remaining USDC to owner
+        IERC20(usdc).transfer(msg.sender, project.amount);
+
+        emit ProjectTerminated(projectId, project.amount);
+    }
+
+    // Add a job to a project
+    function createJob(
+        uint _projectId,
+        string memory _jobDescription,
+        string memory _jobMetadata
+    ) public {
+        require(_projectId < nextProjectId, "Project does not exist.");
+        Job memory newJob = Job({
+            jobId: nextJobId,
+            description: _jobDescription,
+            metadata: _jobMetadata,
+            contractor: msg.sender
+        });
+        projects[_projectId].jobs.push(newJob);
+
+        // Emit JobCreated event
+        emit JobCreated(
+            _projectId,
+            nextJobId,
+            _jobDescription,
+            _jobMetadata,
+            msg.sender
+        );
+
+        nextJobId++;
     }
 
     // deposit USDC
@@ -69,6 +113,47 @@ contract Hook is Ownable, ReentrancyGuard {
         IERC20(usdc).transferFrom(msg.sender, address(this), amount);
 
         emit Deposit(msg.sender, projectId, amount);
+    }
+
+    // Get a specific project by its ID
+    function getProject(
+        uint _projectId
+    ) public view returns (uint, string memory, uint, Job[] memory) {
+        require(_projectId < nextProjectId, "Project does not exist.");
+        Project storage project = projects[_projectId];
+        return (
+            project.projectId,
+            project.description,
+            project.amount,
+            project.jobs
+        );
+    }
+
+    // Get a specific job within a project
+    function getJob(
+        uint _projectId,
+        uint _jobId
+    ) public view returns (uint, string memory, string memory) {
+        require(_projectId < nextProjectId, "Project does not exist.");
+        Project storage project = projects[_projectId];
+        require(_jobId < project.jobs.length, "Job does not exist.");
+        Job storage job = project.jobs[_jobId];
+        return (job.jobId, job.description, job.metadata);
+    }
+
+    function finalizeJob(uint projectId, uint jobId) external {
+        require(projectId < nextProjectId, "Project does not exist.");
+        Project storage project = projects[projectId];
+        require(jobId < project.jobs.length, "Job does not exist.");
+
+        // mint NFT
+        ISnaptureNFT(nft).mint(msg.sender);
+
+        // release fund to contractor
+        IERC20(usdc).transfer(project.jobs[jobId].contractor, project.amount);
+
+        // remove job from project
+        delete project.jobs[jobId];
     }
 
     function emergencyWithdraw(
