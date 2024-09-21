@@ -39,6 +39,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     uint256 public threshold;
 
     error NumberBelowThreshold();
+    error UnsupportedOperation();
 
     event Deposit(address indexed user, uint projectId, uint256 amount);
     event Withdrawn(
@@ -223,33 +224,33 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     }
 
     function didReceiveAttestation(
-        address attester,
+        address, // attester,
         uint64, // schemaId
         uint64, // attestationId
         IERC20, // resolverFeeERC20Token
         uint256, // resolverFeeERC20Amount
         bytes calldata // extraData
-    ) external view {
-        _checkAttesterWhitelistStatus(attester);
+    ) external pure {
+        revert UnsupportedOperation();
     }
 
     function didReceiveRevocation(
-        address attester,
+        address, // attester,
         uint64, // schemaId
         uint64, // attestationId
         bytes calldata // extraData
     ) external payable {
-        _checkAttesterWhitelistStatus(attester);
+        revert UnsupportedOperation();
     }
 
     function didReceiveRevocation(
-        address attester,
+        address, // attester,
         uint64, // schemaId
         uint64, // attestationId
         IERC20, // resolverFeeERC20Token
         uint256, // resolverFeeERC20Amount
         bytes calldata // extraData
-    ) external view {
-        _checkAttesterWhitelistStatus(attester);
+    ) external pure {
+        revert UnsupportedOperation();
     }
 }
