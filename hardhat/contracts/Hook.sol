@@ -33,7 +33,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
 
     mapping(uint => Project) public projects;
     uint public nextProjectId;
-    uint public nextJobId;
+    mapping(uint => uint) public nextJobId; // project id => next job id
 
     uint public threshold = 2;
 
@@ -117,7 +117,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     ) public {
         require(_projectId < nextProjectId, "Project does not exist.");
         Job memory newJob = Job({
-            jobId: nextJobId,
+            jobId: nextJobId[_projectId],
             name: _jobName,
             description: _jobDescription,
             amount: _jobAmount,
@@ -129,7 +129,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         // Emit JobCreated event
         emit JobCreated(
             _projectId,
-            nextJobId,
+            nextJobId[_projectId],
             _jobName,
             _jobDescription,
             _jobAmount,
@@ -137,7 +137,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
             msg.sender
         );
 
-        nextJobId++;
+        nextJobId[_projectId]++;
     }
 
     // deposit USDC
@@ -185,9 +185,9 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
 
     function _finalizeJob(uint projectId, uint jobId) public {
         debugMessage = "finalizeJob";
-        // require(projectId < nextProjectId, "Project does not exist.");
+        require(projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[projectId];
-        // require(jobId < project.jobs.length, "Job does not exist.");
+        require(jobId < project.jobs.length, "Job does not exist.");
         Job storage job = project.jobs[jobId];
 
         debugMessage = "finalizeJob: mint NFT";
