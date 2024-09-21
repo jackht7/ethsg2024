@@ -142,7 +142,7 @@ describe("All Contracts", function () {
 
             //set hook contract
             await nft.setHookAddress(await hook.getAddress());
-            
+
             // Finalize the job
             await hook.connect(user1)._finalizeJob(projectId, jobId);
 
@@ -157,6 +157,63 @@ describe("All Contracts", function () {
 
             // should not allow to Finalize with the same projectId and jobId
             await expect(hook.connect(user1)._finalizeJob(projectId, jobId))
+                .to.be.revertedWith('tokenId already exists');
+        });
+
+        it("should create a project with multiple jobs and mint an NFT", async function () {
+            // Create a project
+            const projectDescription = "Test Project";
+            const projectAmount = ethers.parseUnits("100", 6); // 100 USDC
+            await mockUSDC.connect(user1).approve(await hook.getAddress(), projectAmount);
+            const projectId1 = await createProject(user1, projectDescription, projectAmount);
+
+            // Create the second project
+            const projectDescription2 = "Test Project 2";
+            const projectAmount2 = ethers.parseUnits("50", 6); // 200 USDC
+            await mockUSDC.connect(user1).approve(await hook.getAddress(), projectAmount2);
+            const projectId2 = await createProject(user1, projectDescription2, projectAmount2);
+
+            // // create the third project
+            // const projectDescription3 = "Test Project 3";
+            // const projectAmount3 = ethers.parseUnits("2000", 6); // 300 USDC
+            // await mockUSDC.connect(user1).approve(await hook.getAddress(), projectAmount3);
+            // const projectId3 = await createProject(user1, projectDescription3, projectAmount3);
+
+            // Create a job for the project
+            const jobName = "Test Job";
+            const jobDescription = "Test Job Description";
+            const jobAmount = ethers.parseUnits("50", 6); // 10 USDC
+            const jobMetadata = tokenUri;
+
+            await hook.connect(user1).createJob(projectId1, jobName, jobDescription, jobAmount, jobMetadata);
+
+            // Create the second job
+            await hook.connect(user1).createJob(projectId1, jobName, jobDescription, jobAmount, jobMetadata);
+            // // Create the third job
+            // await hook.connect(user1).createJob(projectId, jobName, jobDescription, jobAmount, jobMetadata);
+
+            //set hook contract
+            await nft.setHookAddress(await hook.getAddress());
+            
+            // Finalize the job
+            let jobId = 0;
+            await hook.connect(user1)._finalizeJob(projectId1, BigInt(jobId));
+
+
+            jobId = 1;
+            await hook.connect(user1)._finalizeJob(projectId1, BigInt(jobId));
+
+            const recipient = user1.address;
+            let tokenId = projectId1.toString() + jobId.toString();
+            tokenId = ethers.toBigInt(tokenId);
+
+            // retrieve the NFT by tokenId
+            const ownerOfNFT = await nft.ownerOf(tokenId);
+            expect(ownerOfNFT).to.equal(recipient);
+            expect(await nft.tokenURI(tokenId)).to.equal(tokenUri);
+
+            // should not allow to Finalize with the same projectId and jobId
+            await expect(hook.connect(user1)._finalizeJob(projectId1, jobId))
                 .to.be.revertedWith('tokenId already exists');
         });
 

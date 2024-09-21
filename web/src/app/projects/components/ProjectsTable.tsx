@@ -48,14 +48,31 @@ const ProjectsTable = () => {
 
       const nextProjectIdFunc = hookContract.getFunction('nextProjectId');
       const getProjectFunc = hookContract.getFunction('getProject');
-      const nextId = Number(await nextProjectIdFunc.call(signer));
+      const attestationCountFunc = hookContract.getFunction('attestationCount');
+      const nextProjectId = Number(await nextProjectIdFunc.call(signer));
       const projects = [];
 
-      for (let i = 0; i < nextId; i++) {
-        const [projectId, name, description, amount, jobs] = await getProjectFunc(i);
+      for (let i = 0; i < nextProjectId; i++) {
+        const jobId = i;
+        const [projectId, name, description, amount, jobs] = await getProjectFunc(jobId);
+
+        //loop through jobs
+        let approved = 0;
+        for (let j = 0; j < jobs.length; j++) {
+          const jobId = j;
+          const attestationCount = Number(await attestationCountFunc(BigInt(projectId as string), BigInt(jobId)));
+          console.log(BigInt(projectId as string), BigInt(jobId))
+          console.log('attestationCount', attestationCount)
+
+          if(attestationCount == 2) approved++;
+        }
+
+        //get 
         projects.push({
           projectId,
           name: description,
+          proposals: jobs.length,
+          approved,
           amount,
         } as Project);
       }
