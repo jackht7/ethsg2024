@@ -56,15 +56,21 @@ const ProjectsTable = () => {
       const nextId = Number(await nextProjectIdFunc.call(signer));
       const projects = [];
 
-      for (let i = 1; i <= nextId; i++) {
-        const project = await getProjectFunc.call(signer);
-        console.log(project);
-        projects.push(project);
+      for (let i = 0; i < nextId; i++) {
+        const [projectId, name, description, amount, jobs] = await getProjectFunc(i);
+        projects.push({
+          name: description,
+          amount: amount,
+        } as Project);
       }
+
+      return projects;
     };
 
     const interval = setInterval(() => {
-      fetchProjects();
+      fetchProjects().then((res) => {
+        if (res) setProjects(res);
+      });
     }, 5000);
 
     return () => clearInterval(interval);
@@ -82,7 +88,8 @@ const ProjectsTable = () => {
           </TableRow>
         </TableHead>
         <TableBody style={{ background: 'white' }}>
-          {projects.length > 0 &&
+          {projects &&
+            projects.length > 0 &&
             projects.map((row) => (
               <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell component="th" scope="row">
