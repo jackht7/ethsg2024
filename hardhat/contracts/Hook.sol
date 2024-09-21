@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ISPHook} from "@ethsign/sign-protocol-evm/src/interfaces/ISPHook.sol";
 import "./interfaces/ISnaptureNFT.sol";
+import "./WhitelistMananger.sol";
 
-contract Hook is Ownable, ReentrancyGuard {
+contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     // USDC address
     address public usdc;
     address public nft;
@@ -52,7 +53,7 @@ contract Hook is Ownable, ReentrancyGuard {
     );
     event ProjectTerminated(uint indexed projectId, uint amount);
 
-    constructor(address _nft, address _usdc) Ownable(msg.sender) {
+    constructor(address _nft, address _usdc) {
         nft = _nft;
         usdc = _usdc;
     }
@@ -185,5 +186,45 @@ contract Hook is Ownable, ReentrancyGuard {
         IERC20(usdc).transfer(msg.sender, amount);
 
         emit Withdrawn(msg.sender, projectId, amount, reason);
+    }
+
+    function didReceiveAttestation(
+        address attester,
+        uint64, // schemaId
+        uint64, // attestationId
+        bytes calldata // extraData
+    ) external payable {
+        _checkAttesterWhitelistStatus(attester);
+    }
+
+    function didReceiveAttestation(
+        address attester,
+        uint64, // schemaId
+        uint64, // attestationId
+        IERC20, // resolverFeeERC20Token
+        uint256, // resolverFeeERC20Amount
+        bytes calldata // extraData
+    ) external view {
+        _checkAttesterWhitelistStatus(attester);
+    }
+
+    function didReceiveRevocation(
+        address attester,
+        uint64, // schemaId
+        uint64, // attestationId
+        bytes calldata // extraData
+    ) external payable {
+        _checkAttesterWhitelistStatus(attester);
+    }
+
+    function didReceiveRevocation(
+        address attester,
+        uint64, // schemaId
+        uint64, // attestationId
+        IERC20, // resolverFeeERC20Token
+        uint256, // resolverFeeERC20Amount
+        bytes calldata // extraData
+    ) external view {
+        _checkAttesterWhitelistStatus(attester);
     }
 }
