@@ -35,10 +35,13 @@ const Nft = ({ jobId }: { jobId: string }) => {
 
     return () => clearInterval(interval);
   }, [address, chainId, signer]);
-  console.log('token', token);
+
   if (token)
     return (
-      <Link target="_blank" href={token}>
+      <Link
+        target="_blank"
+        href={`https://gnosis-chiado.blockscout.com/token/0xA7175491676FA1c205fbc2215E4eEABeE2927f2b/instance/${projectId + jobId}`}
+      >
         {formatAddress(token.replace('https://gateway.pinata.cloud/ipfs/', '').toString())}
       </Link>
     );
