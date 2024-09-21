@@ -69,9 +69,15 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     // Add a new project
     function createProject(string memory _description, uint _amount) public {
         // Check balance
-        require(IERC20(usdc).balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        require(
+            IERC20(usdc).balanceOf(msg.sender) >= _amount,
+            "Insufficient balance"
+        );
         // Check allowance
-        require(IERC20(usdc).allowance(msg.sender, address(this)) >= _amount, "Insufficient allowance");
+        require(
+            IERC20(usdc).allowance(msg.sender, address(this)) >= _amount,
+            "Insufficient allowance"
+        );
 
         Project storage project = projects[nextProjectId];
         project.projectId = nextProjectId;
@@ -175,7 +181,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         return (job.jobId, job.name, job.description, job.amount, job.metadata);
     }
 
-    function _finalizeJob(uint projectId, uint jobId) public onlyOwner {
+    function _finalizeJob(uint projectId, uint jobId) public {
         require(projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[projectId];
         require(jobId < project.jobs.length, "Job does not exist.");
@@ -221,7 +227,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         Attestation memory attestation = ISP(_msgSender()).getAttestation(
             attestationId
         );
-        data = attestation.data;
+
         (uint projectId, uint jobId) = abi.decode(
             attestation.data,
             (uint256, uint256)
