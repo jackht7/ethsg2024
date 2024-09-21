@@ -1,5 +1,5 @@
 require('@nomicfoundation/hardhat-toolbox');
-
+require('@nomicfoundation/hardhat-verify');
 // read private key from .env file
 require('dotenv').config();
 
@@ -15,5 +15,20 @@ module.exports = {
       chainId: 10200,
       accounts: [process.env.DEPLOYER_PK],
     },
+  },
+  etherscan: {
+    apiKey: 'abc',
+    customChains: [
+      {
+        network: 'gnosisChiado',
+        urls: {
+          apiURL: 'https://gnosis-chiado.blockscout.com/api/',
+          browserURL: 'https://gnosis-chiado.blockscout.com/',
+        },
+      },
+    ],
+  },
+  sourcify: {
+    enabled: false,
   },
 };
