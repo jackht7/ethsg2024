@@ -142,9 +142,9 @@ describe("All Contracts", function () {
 
             //set hook contract
             await nft.setHookAddress(await hook.getAddress());
-
+            
             // Finalize the job
-            await hook.connect(owner)._finalizeJob(projectId, jobId);
+            await hook.connect(user1)._finalizeJob(projectId, jobId);
 
             const recipient = user1.address;
             let tokenId = projectId.toString() + jobId.toString();
@@ -154,7 +154,25 @@ describe("All Contracts", function () {
             const ownerOfNFT = await nft.ownerOf(tokenId);
             expect(ownerOfNFT).to.equal(recipient);
             expect(await nft.tokenURI(tokenId)).to.equal(tokenUri);
+
+            // should not allow to Finalize with the same projectId and jobId
+            await expect(hook.connect(user1)._finalizeJob(projectId, jobId))
+                .to.be.revertedWith('tokenId already exists');
         });
+
+        // it("should user able to sign in didReceiveAttestation", async function () {
+        //     const projectId = 1;
+        //     const jobId = 1;
+        //     const attestationId = 1;
+        //     const attester = user1.address;
+
+        //     await hook.connect(owner).setWhitelist(attester, true);
+        //     const data = "0x000000000000000000000000000000000000000000000000000000000001e240000000000000000000000000000000000000000000000000000000000009fbf10000000000000000000000000000000000000000000000000000000066eeb94500000000000000000000000000000000000000000000000000000000000003e8000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000002e516d547a513159625a4a724d58724a384375793539413164546d547037774361686d76485934765535455757665a000000000000000000000000000000000000";
+
+        //     const tx = await hook.connect(user1).didReceiveAttestation(attester, projectId, jobId, data);
+        //     await tx.wait();
+            
+        // });
 
         // //create a project and terminate it
         // it("should create a project and terminate it", async function () {
