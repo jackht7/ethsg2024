@@ -67,7 +67,7 @@ const Jobs = () => {
           },
         }}
       >
-        <DialogTitle>New Transaction</DialogTitle>
+        <DialogTitle>New Job</DialogTitle>
         <DialogContent>
           <JobForm />
         </DialogContent>

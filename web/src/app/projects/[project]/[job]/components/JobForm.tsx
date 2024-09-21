@@ -70,7 +70,13 @@ const JobForm = () => {
     );
     const createJobFunc = hookContract.getFunction('createJob');
 
-    const jobResponse = await createJobFunc(BigInt(projectId as string), name, description, amount, upload.IpfsHash);
+    const jobResponse = await createJobFunc(
+      BigInt(projectId as string),
+      name,
+      description,
+      amount,
+      `https://gateway.pinata.cloud/ipfs/${upload.IpfsHash}`
+    );
     await jobResponse.wait();
   };
 
