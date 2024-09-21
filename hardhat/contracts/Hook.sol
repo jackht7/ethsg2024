@@ -15,6 +15,7 @@ contract Hook is Ownable, ReentrancyGuard {
         uint jobId;
         string name;
         string description;
+        uint amount;
         string metadata;
         address contractor;
     }
@@ -45,6 +46,7 @@ contract Hook is Ownable, ReentrancyGuard {
         uint indexed jobId,
         string name,
         string description,
+        uint amount,
         string metadata,
         address contractor
     );
@@ -88,6 +90,7 @@ contract Hook is Ownable, ReentrancyGuard {
         uint _projectId,
         string memory _jobName,
         string memory _jobDescription,
+        uint _jobAmount,
         string memory _jobMetadata
     ) public {
         require(_projectId < nextProjectId, "Project does not exist.");
@@ -95,6 +98,7 @@ contract Hook is Ownable, ReentrancyGuard {
             jobId: nextJobId,
             name: _jobName,
             description: _jobDescription,
+            amount: _jobAmount,
             metadata: _jobMetadata,
             contractor: msg.sender
         });
@@ -106,6 +110,7 @@ contract Hook is Ownable, ReentrancyGuard {
             nextJobId,
             _jobName,
             _jobDescription,
+            _jobAmount,
             _jobMetadata,
             msg.sender
         );
@@ -144,21 +149,26 @@ contract Hook is Ownable, ReentrancyGuard {
     function getJob(
         uint _projectId,
         uint _jobId
-    ) public view returns (uint, string memory, string memory, string memory) {
+    )
+        public
+        view
+        returns (uint, string memory, string memory, uint, string memory)
+    {
         require(_projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[_projectId];
         require(_jobId < project.jobs.length, "Job does not exist.");
         Job storage job = project.jobs[_jobId];
-        return (job.jobId, job.name, job.description, job.metadata);
+        return (job.jobId, job.name, job.description, job.amount, job.metadata);
     }
 
     function finalizeJob(uint projectId, uint jobId) external {
         require(projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[projectId];
         require(jobId < project.jobs.length, "Job does not exist.");
+        Job storage job = project.jobs[jobId];
 
-        // mint NFT
-        ISnaptureNFT(nft).mint(msg.sender);
+        // mint NFT to contractor
+        ISnaptureNFT(nft).mint(job.contractor);
 
         // release fund to contractor
         IERC20(usdc).transfer(project.jobs[jobId].contractor, project.amount);
