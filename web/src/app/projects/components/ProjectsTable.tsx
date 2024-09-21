@@ -61,13 +61,11 @@ const ProjectsTable = () => {
         for (let j = 0; j < jobs.length; j++) {
           const jobId = j;
           const attestationCount = Number(await attestationCountFunc(BigInt(projectId as string), BigInt(jobId)));
-          console.log(BigInt(projectId as string), BigInt(jobId))
-          console.log('attestationCount', attestationCount)
 
-          if(attestationCount == 2) approved++;
+          if (attestationCount == 2) approved++;
         }
 
-        //get 
+        //get
         projects.push({
           projectId,
           name: description,
@@ -97,7 +95,7 @@ const ProjectsTable = () => {
             <StyledTableCell>Contract</StyledTableCell>
             <StyledTableCell align="right">Proposals</StyledTableCell>
             <StyledTableCell align="right">Approved</StyledTableCell>
-            <StyledTableCell align="right">Total Amount (SGD)</StyledTableCell>
+            <StyledTableCell align="right">Total Amount (USDC)</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody style={{ background: 'white' }}>

@@ -135,7 +135,7 @@ const JobsTable = () => {
             <StyledTableCell>Job</StyledTableCell>
 
             <StyledTableCell align="right">Image Hash</StyledTableCell>
-            <StyledTableCell align="right">Total Amount (SGD)</StyledTableCell>
+            <StyledTableCell align="right">Total Amount (USDC)</StyledTableCell>
             <StyledTableCell align="right">Action</StyledTableCell>
             <StyledTableCell align="right">Approval</StyledTableCell>
             <StyledTableCell align="right">NFT</StyledTableCell>
@@ -166,7 +166,7 @@ const JobsTable = () => {
                       color="default"
                       onClick={async () => await handleApprove(job)}
                     >
-                      Approve
+                      Attest
                     </Button>
                     <Button size="small" variant="outlined" color="default">
                       Reject
