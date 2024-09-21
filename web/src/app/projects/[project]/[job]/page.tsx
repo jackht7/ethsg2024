@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-
 import { Box, Button, Container, Dialog, DialogContent, DialogTitle } from '@mui/material';
 
 import JobForm from './components/JobForm';
 import JobsTable from './components/JobsTable';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 
 interface Job {
   name: string;
@@ -26,9 +26,12 @@ const Jobs = () => {
   return (
     <>
       <Box>
-        <Container style={{ margin: '20px' }}>
+        <Container style={{ margin: '20px',display: 'flex', justifyContent: 'space-between' }}>
           <Button variant="contained" onClick={handleModalOpen}>
             Create job
+          </Button>
+          <Button variant="contained" startIcon={<LocalAtmIcon />}>
+            Deposit
           </Button>
         </Container>
         <Container style={{ margin: '20px' }}>
