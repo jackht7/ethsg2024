@@ -10,7 +10,6 @@ import "./interfaces/ISnaptureNFT.sol";
 import "./WhitelistMananger.sol";
 
 contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
-    // USDC address
     address public usdc;
     address public nft;
 
@@ -36,7 +35,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     uint public nextProjectId;
     uint public nextJobId;
 
-    uint256 public threshold;
+    uint256 public threshold = 2;
 
     error NumberBelowThreshold();
     error UnsupportedOperation();
