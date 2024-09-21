@@ -33,7 +33,7 @@ interface Job {
   name: string;
   description: number;
   amount: number;
-  metadata: number;
+  metadata: string;
 }
 
 const JobsTable = () => {
@@ -44,10 +44,16 @@ const JobsTable = () => {
   const [signClient, setSignClient] = useState<SignProtocolClient>();
 
   useEffect(() => {
-    const privateKey = (process.env.NEXT_PUBLIC_PRIVATE_KEY || address) as Address;
+    const privateKey = (
+      address == process.env.NEXT_PUBLIC_CLIENT_ADDRESS
+        ? process.env.NEXT_PUBLIC_CLIENT_PRIVATE_KEY
+        : address == process.env.NEXT_PUBLIC_CONTRACTOR_ADDRESS
+          ? process.env.NEXT_PUBLIC_CONTRACTOR_PRIVATE_KEY
+          : ''
+    ) as Address;
     const newClient = new SignProtocolClient(SpMode.OnChain, {
       chain: EvmChains.gnosisChiado,
-      account: address,
+      account: privateKeyToAccount(privateKey),
       rpcUrl: 'https://rpc.chiado.gnosis.gateway.fm',
     } as OnChainClientOptions);
 
@@ -64,7 +70,7 @@ const JobsTable = () => {
 
       const nextJobIdFunc = hookContract.getFunction('nextJobId');
       const getJobFunc = hookContract.getFunction('getJob');
-      const nextId = Number(await nextJobIdFunc.call(signer));
+      const nextId = Number(await nextJobIdFunc(BigInt(projectId as string)));
       const jobs = [];
 
       for (let i = 0; i < nextId; i++) {
@@ -156,8 +162,8 @@ const JobsTable = () => {
               </TableCell>
 
               <TableCell align="right">
-                <Link target="_blank" href={`https://gateway.pinata.cloud/ipfs/${job.metadata}`}>
-                  {formatAddress(job.metadata.toString())}
+                <Link target="_blank" href={`${job.metadata}`}>
+                  {formatAddress(job.metadata.replace('https://gateway.pinata.cloud/ipfs/', '').toString())}
                 </Link>
               </TableCell>
               <TableCell align="right">{formatCurrency(job.amount)}</TableCell>
