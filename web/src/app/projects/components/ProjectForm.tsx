@@ -7,8 +7,7 @@ import { useAccount } from 'wagmi';
 import { Button, Container, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { Hook__factory } from '@/../typechain';
-import { MockUSDC__factory } from '@/../typechain';
+import { Hook__factory, MockUSDC__factory } from '@/../typechain';
 import { config } from '@/app/_lib/networkConfig';
 import { useEthersSigner } from '@/app/_lib/wagmi-signer';
 
