@@ -20,11 +20,13 @@ const Projects = () => {
   return (
     <>
       <Box>
-        <Container style={{
-          margin: '10px auto',
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}>
+        <Container
+          style={{
+            margin: '10px auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
           <Button variant="contained" onClick={handleModalOpen}>
             Create project
           </Button>
@@ -40,7 +42,7 @@ const Projects = () => {
           style: {
             backgroundColor: 'black',
             color: 'white',
-            minWidth: '1000px',
+            minWidth: '800px',
           },
         }}
       >

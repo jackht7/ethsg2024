@@ -1,16 +1,18 @@
 'use client';
 
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Box, Button, Container, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { useAccount } from 'wagmi';
+
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import { Box, Button, Container, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material';
+
+import { Hook__factory, NFT__factory } from '@/../typechain';
+import { config } from '@/app/_lib/networkConfig';
+import { useEthersSigner } from '@/app/_lib/wagmi-signer';
 
 import JobForm from './components/JobForm';
 import JobsTable from './components/JobsTable';
-import LocalAtmIcon from '@mui/icons-material/LocalAtm';
-import { useEthersSigner } from '@/app/_lib/wagmi-signer';
-import { Hook__factory, NFT__factory } from '@/../typechain';
-import { config } from '@/app/_lib/networkConfig';
-import { useParams } from 'next/navigation';
 
 const Jobs = () => {
   const [modal, setModal] = useState(false);
@@ -27,7 +29,7 @@ const Jobs = () => {
   const handleModalClose = () => {
     setModal(false);
   };
-  
+
   // useEffect(() => {
   //   const fetchProjects = async () => {
   //     console.log('fetchProjects');
@@ -47,7 +49,7 @@ const Jobs = () => {
   //     console.log(amount);
   //     return amount;
   //   }
-    
+
   //   const interval = setInterval(() => {
   //     fetchProjects().then((res) => {
   //       if (res) setProjectAmount(res);
@@ -61,11 +63,13 @@ const Jobs = () => {
   return (
     <>
       <Box>
-        <Container style={{
-          margin: '25px auto',
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}>
+        <Container
+          style={{
+            margin: '25px auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
           <Button variant="contained" onClick={handleModalOpen}>
             Create job
           </Button>
@@ -104,7 +108,7 @@ const Jobs = () => {
           style: {
             backgroundColor: 'black',
             color: 'white',
-            minWidth: '1000px',
+            minWidth: '800px',
           },
         }}
       >
