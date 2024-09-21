@@ -20,17 +20,12 @@ import { formatCurrency } from '@/app/_lib/utils';
 import { useEthersSigner } from '@/app/_lib/wagmi-signer';
 
 interface Project {
+  projectId: number;
   name: string;
   amount: number;
   proposals: number;
   approved: number;
 }
-
-function createData(name: string, proposals: number, approved: number, amount: number) {
-  return { name, proposals, approved, amount };
-}
-
-const rows = [createData('Improvement to Building A', 20, 6, 24000)];
 
 const StyledTableCell = styled(TableCell)({
   color: 'white',
@@ -59,8 +54,9 @@ const ProjectsTable = () => {
       for (let i = 0; i < nextId; i++) {
         const [projectId, name, description, amount, jobs] = await getProjectFunc(i);
         projects.push({
+          projectId,
           name: description,
-          amount: amount,
+          amount,
         } as Project);
       }
 
@@ -93,7 +89,7 @@ const ProjectsTable = () => {
             projects.map((row) => (
               <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell component="th" scope="row">
-                  <Link href={`${pathname}/${encodeURIComponent(row.name)}`}>{row.name}</Link>
+                  <Link href={`${pathname}/${row.projectId}/${encodeURIComponent(row.name)}`}>{row.name}</Link>
                 </TableCell>
                 <TableCell align="right">{row.proposals}</TableCell>
                 <TableCell align="right">{row.approved}</TableCell>

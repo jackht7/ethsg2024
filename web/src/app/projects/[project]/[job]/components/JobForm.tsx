@@ -1,14 +1,20 @@
 'use client';
 
+import { useParams } from 'next/navigation';
+import { PinataSDK } from 'pinata-web3';
 import { FormEvent, useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { useAccount } from 'wagmi';
 
 import { Button, Container, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { PinataSDK } from "pinata-web3";
-import { v4 as uuidv4 } from 'uuid';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
+import { Hook__factory, MockUSDC__factory } from '@/../typechain';
+import { config } from '@/app/_lib/networkConfig';
+import { useEthersSigner } from '@/app/_lib/wagmi-signer';
 
 const StyledTextField = styled(TextField)({
   input: { color: 'white' },
@@ -25,45 +31,48 @@ interface JobFormProps {
   addJob: (newJob: Job) => void;
 }
 
-const JobForm: React.FC<JobFormProps> = ({ addJob }) => {
+const JobForm = () => {
+  const { project: projectId, job } = useParams();
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState(0);
   const [file, uploadFile] = useState<File | null>(null);
-
+  const signer = useEthersSigner();
+  const { address, chainId } = useAccount();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-
     event.preventDefault();
 
-    console.log(name, amount, file);
-    console.log(process.env.NEXT_PUBLIC_PINATA_JWT)
-
-    // call pinata api 
     const pinata = new PinataSDK({
       pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT,
-      pinataGateway: "crimson-added-hedgehog-755.mypinata.cloud"
+      pinataGateway: 'crimson-added-hedgehog-755.mypinata.cloud',
     });
     const upload = await pinata.upload.file(file!);
     const jobId = uuidv4();
 
     const resJson = {
-      "name": name,
-      "description": description,
-      "image": upload.IpfsHash,
-      "jobId": jobId,
-    }
-    console.log(resJson);
+      name: name,
+      description: description,
+      image: upload.IpfsHash,
+      jobId: jobId,
+    };
     const newJob: Job = {
       id: jobId,
       name: name,
       amount: amount,
-      image_hash: upload.IpfsHash
+      image_hash: upload.IpfsHash,
     };
-    addJob(newJob);
-    console.log(newJob);
-  };
 
+    const hookContractFactory = new Hook__factory(signer);
+    const hookContract = hookContractFactory.attach(
+      config[chainId?.toString() as keyof typeof config].hookContractAddress
+    );
+    const createJobFunc = hookContract.getFunction('createJob');
+
+    const jobResponse = await createJobFunc(BigInt(projectId), name, description, amount, upload.IpfsHash);
+    await jobResponse.wait();
+  };
 
   return (
     <form autoComplete="off" onSubmit={handleSubmit}>
@@ -103,26 +112,25 @@ const JobForm: React.FC<JobFormProps> = ({ addJob }) => {
               input: { color: 'white' },
               color: 'white',
               mb: 2,
-              width: '100%'
+              width: '100%',
             }}
             value={null}
           />
         </LocalizationProvider>
 
-        <TextField type='file'
+        <TextField
+          type="file"
           id="outlined-basic"
           sx={{
             mb: 2,
             input: { color: 'white' },
             color: 'white',
-            width: '100%'
+            width: '100%',
           }}
-          placeholder='Upload file'
-          name='file'
+          placeholder="Upload file"
+          name="file"
           fullWidth
-          onChange={(e: any) =>
-            uploadFile(e.target.files[0])
-          }
+          onChange={(e: any) => uploadFile(e.target.files[0])}
         />
 
         <Button variant="contained" type="submit">
