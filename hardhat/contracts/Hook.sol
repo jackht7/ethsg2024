@@ -37,6 +37,8 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
 
     uint public threshold = 2;
 
+    string public debugMessage;
+
     mapping(uint => mapping(uint => uint)) public attestationCount; // projectId => jobId => count
 
     error NumberBelowThreshold();
@@ -182,18 +184,21 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     }
 
     function _finalizeJob(uint projectId, uint jobId) public {
-        require(projectId < nextProjectId, "Project does not exist.");
+        debugMessage = "finalizeJob";
+        // require(projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[projectId];
-        require(jobId < project.jobs.length, "Job does not exist.");
+        // require(jobId < project.jobs.length, "Job does not exist.");
         Job storage job = project.jobs[jobId];
 
+        debugMessage = "finalizeJob: mint NFT";
         // mint NFT to contractor
         string memory tokenUri = project.jobs[jobId].metadata;
         ISnaptureNFT(nft).mint(job.contractor, projectId, jobId, tokenUri);
-
+        debugMessage = "finalizeJob: transfer USDC";
         // release fund to contractor
         IERC20(usdc).transfer(project.jobs[jobId].contractor, project.amount);
 
+        debugMessage = "finalizeJob: emit event";
         // remove job from project
         // delete project.jobs[jobId];
     }
