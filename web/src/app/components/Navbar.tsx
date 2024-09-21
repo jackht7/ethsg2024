@@ -46,7 +46,7 @@ const Navbar = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Contracts
+            Projects
           </Typography>
           <Button color="inherit">{formatAddress(account)}</Button>
         </Toolbar>
