@@ -66,6 +66,7 @@ export interface HookInterface extends Interface {
       | "emergencyWithdraw"
       | "getJob"
       | "getProject"
+      | "hasAttested"
       | "nextJobId"
       | "nextProjectId"
       | "nft"
@@ -158,6 +159,10 @@ export interface HookInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "hasAttested",
+    values: [BigNumberish, BigNumberish, AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "nextJobId",
     values: [BigNumberish]
   ): string;
@@ -238,6 +243,10 @@ export interface HookInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getJob", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getProject", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "hasAttested",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "nextJobId", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nextProjectId",
@@ -534,6 +543,12 @@ export interface Hook extends BaseContract {
     "view"
   >;
 
+  hasAttested: TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish, arg2: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   nextJobId: TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
 
   nextProjectId: TypedContractMethod<[], [bigint], "view">;
@@ -707,6 +722,13 @@ export interface Hook extends BaseContract {
   ): TypedContractMethod<
     [_projectId: BigNumberish],
     [[bigint, string, string, bigint, Hook.JobStructOutput[]]],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "hasAttested"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish, arg2: AddressLike],
+    [bigint],
     "view"
   >;
   getFunction(

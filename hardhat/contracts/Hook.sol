@@ -34,6 +34,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     mapping(uint => Project) public projects;
     uint public nextProjectId;
     mapping(uint => uint) public nextJobId; // project id => next job id
+    mapping(uint => mapping(uint => mapping(address => uint64))) public hasAttested;
 
     uint public threshold = 2;
 
@@ -237,6 +238,15 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
             attestation.data,
             (uint256, uint256)
         ); // projectId and jobId
+
+        // Check if the signer has already attested
+        require(
+            hasAttested[projectId][jobId][attestation.attester] == 0,
+            "Signer has already attested"
+        );
+        // Mark the signer as having attested
+        hasAttested[projectId][jobId][attestation.attester] = attestationId;
+
         attestationCount[projectId][jobId]++;
         if (_checkThreshold(attestationCount[projectId][jobId])) {
             _finalizeJob(projectId, jobId);
