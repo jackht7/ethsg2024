@@ -1,8 +1,10 @@
-const contractAddress = process.env.PUBLIC_SMART_CONTRACT_ADDRESS;
+const hookContractAddress = process.env.PUBLIC_HOOK_CONTRACT_ADDRESS;
+const usdcContractAddress = process.env.PUBLIC_USDC_CONTRACT_ADDRESS;
 
 export const config = {
   '10200': {
     name: 'Gnosis Chaido',
-    contractAddress: contractAddress || '0x152FfbB7510eaa234013b8b3907BFB04DAEf35f6',
+    hookContractAddress: hookContractAddress || '0x47AaDbc03AEa6EDC9D1EF5D8eBa597321743B3B8',
+    usdcContractAddress: usdcContractAddress || '0xdD9868aab91caFe3282cFCC67Cb1DAc965edB1f1',
   },
 };
