@@ -13,6 +13,7 @@ contract Hook is Ownable, ReentrancyGuard {
 
     struct Job {
         uint jobId;
+        string name;
         string description;
         string metadata;
         address contractor;
@@ -20,6 +21,7 @@ contract Hook is Ownable, ReentrancyGuard {
 
     struct Project {
         uint projectId;
+        string name;
         string description;
         uint amount;
         Job[] jobs;
@@ -41,6 +43,7 @@ contract Hook is Ownable, ReentrancyGuard {
     event JobCreated(
         uint indexed projectId,
         uint indexed jobId,
+        string name,
         string description,
         string metadata,
         address contractor
@@ -83,12 +86,14 @@ contract Hook is Ownable, ReentrancyGuard {
     // Add a job to a project
     function createJob(
         uint _projectId,
+        string memory _jobName,
         string memory _jobDescription,
         string memory _jobMetadata
     ) public {
         require(_projectId < nextProjectId, "Project does not exist.");
         Job memory newJob = Job({
             jobId: nextJobId,
+            name: _jobName,
             description: _jobDescription,
             metadata: _jobMetadata,
             contractor: msg.sender
@@ -99,6 +104,7 @@ contract Hook is Ownable, ReentrancyGuard {
         emit JobCreated(
             _projectId,
             nextJobId,
+            _jobName,
             _jobDescription,
             _jobMetadata,
             msg.sender
@@ -118,11 +124,16 @@ contract Hook is Ownable, ReentrancyGuard {
     // Get a specific project by its ID
     function getProject(
         uint _projectId
-    ) public view returns (uint, string memory, uint, Job[] memory) {
+    )
+        public
+        view
+        returns (uint, string memory, string memory, uint, Job[] memory)
+    {
         require(_projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[_projectId];
         return (
             project.projectId,
+            project.name,
             project.description,
             project.amount,
             project.jobs
@@ -133,12 +144,12 @@ contract Hook is Ownable, ReentrancyGuard {
     function getJob(
         uint _projectId,
         uint _jobId
-    ) public view returns (uint, string memory, string memory) {
+    ) public view returns (uint, string memory, string memory, string memory) {
         require(_projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[_projectId];
         require(_jobId < project.jobs.length, "Job does not exist.");
         Job storage job = project.jobs[_jobId];
-        return (job.jobId, job.description, job.metadata);
+        return (job.jobId, job.name, job.description, job.metadata);
     }
 
     function finalizeJob(uint projectId, uint jobId) external {
