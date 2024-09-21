@@ -198,9 +198,9 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         threshold = threshold_;
     }
 
-    function _checkThreshold(uint256 number) internal view {
+    function _checkThreshold(uint256 number) internal view returns (bool) {
         // solhint-disable-next-line custom-errors
-        require(number >= threshold, NumberBelowThreshold());
+        return number >= threshold;
     }
 
     function didReceiveAttestation(
@@ -213,12 +213,12 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         Attestation memory attestation = ISP(_msgSender()).getAttestation(
             attestationId
         );
-        if(_checkThreshold(abi.decode(attestation.data, (uint256)))){
+        if (_checkThreshold(abi.decode(attestation.data, (uint256)))) {
             _finalizeJob(
                 abi.decode(attestation.data, (uint256)), // projectId
                 abi.decode(attestation.data, (uint256)) // jobId
             );
-        };
+        }
     }
 
     function didReceiveAttestation(
