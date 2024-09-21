@@ -4,32 +4,32 @@ import { FormEvent, useEffect, useState } from 'react';
 
 import { Button, Container, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const StyledTextField = styled(TextField)({
   input: { color: 'white' },
 });
 
+interface Job {
+  name: string;
+  amount: number;
+  image_hash: string;
+}
+
 const JobForm = () => {
   const [name, setName] = useState('');
-  const [threshold, setThreshold] = useState(1);
-  const [reviewers, setReviewers] = useState(['']);
+  const [amount, setAmount] = useState(0);
+  const [image, setImage] = useState('');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (name && reviewers) {
-      console.log(name, reviewers);
-    }
-  };
+    console.log(name, amount);
+    // call pinata api 
 
-  useEffect(() => {
-    const newReviewers = Array.from({ length: threshold }, (_, i) => reviewers[i] || '');
-    setReviewers(newReviewers);
-  }, [threshold]);
+    // call smart contract api 
 
-  const handleReviewerChange = (index: number, value: string) => {
-    const newReviewers = [...reviewers];
-    newReviewers[index] = value;
-    setReviewers(newReviewers);
   };
 
   return (
@@ -45,27 +45,39 @@ const JobForm = () => {
           value={name}
         />
         <StyledTextField
-          label="Threshold"
-          onChange={(e) => setThreshold(Number(e.target.value))}
+          label="Amount"
+          onChange={(e) => setAmount(Number(e.target.value))}
           required
           variant="outlined"
-          value={threshold}
-          fullWidth
           sx={{ mb: 2 }}
+          fullWidth
+          value={amount}
         />
 
-        {reviewers.map((reviewer, index) => (
-          <StyledTextField
-            key={index}
-            label={`Reviewer ${index + 1}`}
-            onChange={(e) => handleReviewerChange(index, e.target.value)}
-            required
-            variant="outlined"
-            value={reviewer}
-            fullWidth
-            sx={{ mb: 2 }}
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker 
+          label="Completion Date" 
+          sx={{ 
+            input: { color: 'white' },
+            color: 'white', 
+            mb: 2, 
+            width: '100%'
+          }} 
+            value={null}  
           />
-        ))}
+        </LocalizationProvider>
+
+        <TextField type='file'
+        id="outlined-basic" 
+        sx={{ mb: 2, 
+          input: { color: 'white' },
+          color: 'white', 
+          width: '100%'
+        }}
+        placeholder='Upload file'
+        fullWidth
+        />
+
         <Button variant="contained" type="submit">
           Create
         </Button>
