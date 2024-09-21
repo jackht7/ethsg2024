@@ -7,8 +7,14 @@ import { Box, Button, Container, Dialog, DialogContent, DialogTitle } from '@mui
 import JobForm from './components/JobForm';
 import JobsTable from './components/JobsTable';
 
+interface Job {
+  name: string;
+  amount: number;
+}
+
 const Jobs = () => {
   const [modal, setModal] = useState(false);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   const handleModalOpen = () => {
     setModal(true);
@@ -17,6 +23,11 @@ const Jobs = () => {
   const handleModalClose = () => {
     setModal(false);
   };
+
+  const addJob = (newJob: Job) => {
+    setJobs((prevJobs) => [...prevJobs, newJob]);
+  }
+
   return (
     <>
       <Box>
@@ -26,7 +37,7 @@ const Jobs = () => {
           </Button>
         </Container>
         <Container style={{ margin: '20px' }}>
-          <JobsTable />
+          <JobsTable jobs={jobs}/>
         </Container>
       </Box>
       <Dialog

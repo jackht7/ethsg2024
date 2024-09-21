@@ -15,6 +15,17 @@ import { styled } from '@mui/material/styles';
 
 import { formatCurrency } from '@/app/_lib/utils';
 
+interface Project {
+  name: string;
+  amount: number;
+  proposals: number;
+  approved: number;
+}
+
+interface ProjectsTableProps {
+  projects: Project[];
+}
+
 function createData(name: string, proposals: number, approved: number, amount: number) {
   return { name, proposals, approved, amount };
 }
@@ -25,7 +36,7 @@ const StyledTableCell = styled(TableCell)({
   color: 'white',
 });
 
-const ContractsTable = () => {
+const ContractsTable = ( { projects }: ProjectsTableProps) => {
   const pathname = usePathname();
   return (
     <TableContainer component={Paper}>
@@ -39,7 +50,7 @@ const ContractsTable = () => {
           </TableRow>
         </TableHead>
         <TableBody style={{ background: 'white' }}>
-          {rows.map((row) => (
+          {rows?.map((row) => (
             <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
                 <Link href={`${pathname}/${encodeURIComponent(row.name)}`}>{row.name}</Link>
