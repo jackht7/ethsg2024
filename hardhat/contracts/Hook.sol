@@ -213,13 +213,12 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         Attestation memory attestation = ISP(_msgSender()).getAttestation(
             attestationId
         );
-        _checkThreshold(abi.decode(attestation.data, (uint256)));
-
-        // finalize job
-        _finalizeJob(
-            abi.decode(attestation.data, (uint256)), // projectId
-            abi.decode(attestation.data, (uint256)) // jobId
-        );
+        if(_checkThreshold(abi.decode(attestation.data, (uint256)))){
+            _finalizeJob(
+                abi.decode(attestation.data, (uint256)), // projectId
+                abi.decode(attestation.data, (uint256)) // jobId
+            );
+        };
     }
 
     function didReceiveAttestation(

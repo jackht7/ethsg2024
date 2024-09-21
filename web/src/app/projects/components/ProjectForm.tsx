@@ -41,16 +41,13 @@ const ProjectForm = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (name && reviewers.length > 0) {
-      // onAddProject(name, amount, reviewers);
-      // call smart contract api
       const hookContractAddress = await hookContract.getAddress();
       const usdcContractAddress = await usdcContract.getAddress();
       const usdcResponse = await approveUsdcFunc(hookContractAddress, MaxUint256);
-      console.log('Name', name);
-      console.log('amount', amount);
-      const res = await createProjectFunc(name, amount);
-      console.log('res=========================');
-      console.log(res);
+
+      await usdcResponse.wait();
+      const projectRes = await createProjectFunc(name, amount);
+      await projectRes.wait();
       setAmount(0);
       setReviewers(['']);
     }
