@@ -23,8 +23,8 @@ describe("All Contracts", function () {
         hook = await Hook.deploy(await nft.getAddress(), await mockUSDC.getAddress());
         await hook.waitForDeployment();
 
-        // Transfer ownership of NFT to Hook
-        await nft.transferContractOwnership(await hook.getAddress());
+        // // Transfer ownership of NFT to Hook
+        // await nft.transferContractOwnership(await hook.getAddress());
     });
 
     describe("MockUSDC", function () {
@@ -43,35 +43,34 @@ describe("All Contracts", function () {
         it("should deploy successfully", async function () {
             expect(await nft.getAddress()).to.be.properAddress;
         });
+
+        it("should only allow owner or hook contract to mint", async function () {
+            const projectId = 1;
+            const jobId = 1;
+            await expect(nft.connect(user1).mint(user1.address, projectId, jobId, tokenUri))
+                .to.be.revertedWith('Only the hook contract or owner can call this function');
+        });
         
         it("should have correct owner", async function () {
             const contractOwner = await nft.owner();
-            expect(contractOwner).to.equal(await hook.getAddress());
+            expect(contractOwner).to.equal(owner.address);
         });
 
-        // it("should mint NFT successfully", async function () {
-        //     const recipient = user1.address;
-        //     const projectId = 2;
-        //     const jobId = 1;
+        it("should allow owner to mint NFT successfully", async function () {
+            const recipient = user1.address;
+            const projectId = 2;
+            const jobId = 1;
 
-        //     let tokenId = projectId.toString() + jobId.toString();
-        //     tokenId = ethers.toBigInt(tokenId);
+            let tokenId = projectId.toString() + jobId.toString();
+            tokenId = ethers.toBigInt(tokenId);
 
-        //     // Mint the NFT
-        //     const tx = await nft.connect(hook).mint(recipient, projectId, jobId, tokenUri);
-        //     await tx.wait();
+            // Mint the NFT
+            const tx = await nft.connect(owner).mint(recipient, projectId, jobId, tokenUri);
+            await tx.wait();
 
-        //     expect(await nft.ownerOf(tokenId)).to.equal(recipient);
-        //     expect(await nft.tokenURI(tokenId)).to.equal(tokenUri);
-        // });
-
-        // it("should only allow owner to mint", async function () {
-        //     const recipient = user1.address;
-        //     const projectId = 2;
-        //     const jobId = 1;
-        //     await expect(nft.connect(user1).mint(recipient, projectId, jobId, tokenUri))
-        //         .to.be.revertedWith("Ownable: caller is not the owner");
-        // });
+            expect(await nft.ownerOf(tokenId)).to.equal(recipient);
+            expect(await nft.tokenURI(tokenId)).to.equal(tokenUri);
+        });
     });
 
     describe("Hook", function () {
@@ -85,7 +84,6 @@ describe("All Contracts", function () {
             await tx1.wait();
             const tx2 = await mockUSDC.mint(user2.address, ethers.parseUnits("1000", 6));
             await tx2.wait();
-
         });
 
         it("should deploy successfully", async function () {
@@ -141,6 +139,9 @@ describe("All Contracts", function () {
             expect(job[2]).to.equal(jobDescription);
             expect(job[3]).to.equal(jobAmount);
             expect(job[4]).to.equal(jobMetadata);
+
+            //set hook contract
+            await nft.setHookAddress(await hook.getAddress());
 
             // Finalize the job
             await hook.connect(owner)._finalizeJob(projectId, jobId);

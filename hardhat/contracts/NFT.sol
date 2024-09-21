@@ -7,11 +7,18 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract NFT is ERC721URIStorage, Ownable {
+    address public hookAddress;
+
     constructor() ERC721("Snapture", "SNAP") Ownable(msg.sender) {
         // _mint(msg.sender, 1);
     }
 
-    function mint(address to, uint256 projectId, uint256 jobId, string memory tokenUri) public onlyOwner {  
+    modifier allowOwnerOrHook() {
+        require(msg.sender == hookAddress || msg.sender == owner(), "Only the hook contract or owner can call this function");
+        _;
+    }
+
+    function mint(address to, uint256 projectId, uint256 jobId, string memory tokenUri) public allowOwnerOrHook {  
         string memory combinedId = string(abi.encodePacked(Strings.toString(projectId), Strings.toString(jobId)));
         uint256 tokenId = stringToUint(combinedId);
 
@@ -19,9 +26,9 @@ contract NFT is ERC721URIStorage, Ownable {
         _setTokenURI(tokenId, tokenUri);
     }
 
-    // Add this function to allow the owner to transfer ownership
-    function transferContractOwnership(address newOwner) public onlyOwner {
-        transferOwnership(newOwner);
+    // Add this function to allow the owner to set hook contract
+    function setHookAddress(address _hookAddress) public onlyOwner {
+        hookAddress = _hookAddress;
     }
 
     function stringToUint(string memory s) internal pure returns (uint result) {
