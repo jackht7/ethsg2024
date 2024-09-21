@@ -24,9 +24,13 @@ const Nft = ({ jobId }: { jobId: string }) => {
       );
 
       const tokenUriFunc = nftContract.getFunction('tokenURI');
-      const tokenResponse = await tokenUriFunc(projectId + jobId);
 
-      return tokenResponse;
+      try {
+        const tokenResponse = await tokenUriFunc(projectId + jobId);
+        return tokenResponse;
+      } catch {
+        return null;
+      }
     };
 
     const interval = setInterval(() => {

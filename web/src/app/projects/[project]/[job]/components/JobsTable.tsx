@@ -24,6 +24,7 @@ import { config } from '@/app/_lib/networkConfig';
 import { formatAddress, formatCurrency } from '@/app/_lib/utils';
 import { useEthersSigner } from '@/app/_lib/wagmi-signer';
 
+import Count from './Count';
 import Nft from './Nft';
 
 const StyledTableCell = styled(TableCell)({
@@ -45,38 +46,6 @@ const JobsTable = () => {
   const signer = useEthersSigner();
   const [signClient, setSignClient] = useState<SignProtocolClient>();
 
-  // const Nft = ({ jobId }: { jobId: string }) => {
-  //   const [token, setToken] = useState('');
-  //   useEffect(() => {
-  //     const fetchNfts = async () => {
-  //       if (!chainId) return;
-  //       const nftContractFactory = new NFT__factory(signer);
-  //       const nftContract = nftContractFactory.attach(
-  //         config[chainId?.toString() as keyof typeof config].nftContractAddress
-  //       );
-
-  //       const tokenUriFunc = nftContract.getFunction('tokenURI');
-  //       const tokenResponse = await tokenUriFunc(projectId + jobId);
-
-  //       return tokenResponse;
-  //     };
-
-  //     const interval = setInterval(() => {
-  //       fetchNfts().then((res) => setToken(res));
-  //     }, 3000);
-
-  //     return () => clearInterval(interval);
-  //   }, [address, chainId, signer]);
-  //   console.log('token', token);
-  //   {
-  //     token && (
-  //       <Link target="_blank" href={token}>
-  //         {formatAddress(token.replace('https://gateway.pinata.cloud/ipfs/', '').toString())}
-  //       </Link>
-  //     );
-  //   }
-  // };
-
   useEffect(() => {
     const privateKey = (
       address == process.env.NEXT_PUBLIC_CLIENT_ADDRESS
@@ -90,7 +59,7 @@ const JobsTable = () => {
       const newClient = new SignProtocolClient(SpMode.OnChain, {
         chain: EvmChains.gnosisChiado,
         account: privateKeyToAccount(privateKey),
-        rpcUrl: 'https://rpc.chiado.gnosis.gateway.fm',
+        rpcUrl: 'https://rpc.chiadochain.net',
       } as OnChainClientOptions);
 
       setSignClient(newClient);
@@ -168,6 +137,7 @@ const JobsTable = () => {
             <StyledTableCell align="right">Image Hash</StyledTableCell>
             <StyledTableCell align="right">Total Amount (SGD)</StyledTableCell>
             <StyledTableCell align="right">Action</StyledTableCell>
+            <StyledTableCell align="right">Approval</StyledTableCell>
             <StyledTableCell align="right">NFT</StyledTableCell>
           </TableRow>
         </TableHead>
@@ -201,6 +171,9 @@ const JobsTable = () => {
                     <Button size="small" variant="outlined" color="default">
                       Reject
                     </Button>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Count jobId={jodIdString}></Count>
                   </TableCell>
                   <TableCell align="right">
                     <Nft jobId={jodIdString}></Nft>

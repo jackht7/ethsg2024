@@ -24,8 +24,8 @@ const Count = ({ jobId }: { jobId: string }) => {
       );
 
       const attestationCountFunc = hookContract.getFunction('attestationCount');
-      const attestationCount = Number(await attestationCountFunc(BigInt(projectId as string)));
-
+      const attestationCount = Number(await attestationCountFunc(BigInt(projectId as string), BigInt(jobId)));
+      console.log(`projectId:${projectId} job:${jobId} count:${attestationCount}`);
       return attestationCount;
     };
 
