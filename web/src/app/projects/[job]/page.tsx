@@ -3,13 +3,14 @@
 import { useState } from 'react';
 
 import { Box, Button, Container, Dialog, DialogContent, DialogTitle } from '@mui/material';
-
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import JobForm from './components/JobForm';
 import JobsTable from './components/JobsTable';
 
 interface Job {
   name: string;
   amount: number;
+  image_hash: string;
 }
 
 const Jobs = () => {
@@ -31,13 +32,16 @@ const Jobs = () => {
   return (
     <>
       <Box>
-        <Container style={{ margin: '20px' }}>
+        <Container style={{ margin: '20px', display: 'flex', justifyContent: 'space-between' }}>
           <Button variant="contained" onClick={handleModalOpen}>
             Create job
           </Button>
+          <Button variant="contained" startIcon={<LocalAtmIcon />}>
+            Deposit
+          </Button>
         </Container>
         <Container style={{ margin: '20px' }}>
-          <JobsTable jobs={jobs}/>
+          <JobsTable jobs={jobs} />
         </Container>
       </Box>
       <Dialog
@@ -51,9 +55,9 @@ const Jobs = () => {
           },
         }}
       >
-        <DialogTitle>New Transaction</DialogTitle>
+        <DialogTitle>Create New Job</DialogTitle>
         <DialogContent>
-          <JobForm />
+          <JobForm addJob={addJob} />
         </DialogContent>
       </Dialog>
     </>
