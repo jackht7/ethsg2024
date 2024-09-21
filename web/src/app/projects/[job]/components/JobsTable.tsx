@@ -25,27 +25,31 @@ const StyledTableCell = styled(TableCell)({
   color: 'white',
 });
 
-const JobsTable = () => {
+interface JobsTableProps {
+  jobs: any[]
+}
+
+const JobsTable = ( { jobs }: JobsTableProps) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="contracts table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Claim</StyledTableCell>
-            <StyledTableCell align="right">Proposals</StyledTableCell>
-            <StyledTableCell align="right">Approved</StyledTableCell>
+            <StyledTableCell>Job</StyledTableCell>
+            <StyledTableCell align="right">Status</StyledTableCell>
+            <StyledTableCell align="right">Image Hash</StyledTableCell>
             <StyledTableCell align="right">Total Amount (SGD)</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody style={{ background: 'white' }}>
-          {rows.map((row) => (
-            <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+          {jobs?.map((job) => (
+            <TableRow key={job.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
-                {row.name}
+                {job.name}
               </TableCell>
-              <TableCell align="right">{row.proposals}</TableCell>
-              <TableCell align="right">{row.approved}</TableCell>
-              <TableCell align="right">{formatCurrency(row.amount)}</TableCell>
+              <TableCell align="right">{job.image_hash}</TableCell>
+              <TableCell align="right">{job.status}</TableCell>
+              <TableCell align="right">{formatCurrency(job.amount)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

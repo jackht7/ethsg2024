@@ -1,7 +1,6 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-
 import { Button, Container, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -9,15 +8,25 @@ const StyledTextField = styled(TextField)({
   input: { color: 'white' },
 });
 
-const ProjectForm = () => {
+interface ProjectFormProps {
+  onAddProject: (name: string, amount: number, reviewers: string[]) => void;
+}
+
+const ProjectForm = ({ onAddProject }: ProjectFormProps) => {
   const [name, setName] = useState('');
+  const [amount, setAmount] = useState(0);
   const [threshold, setThreshold] = useState(1);
   const [reviewers, setReviewers] = useState(['']);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (name && reviewers) {
-      console.log(name, reviewers);
+    if (name && reviewers.length > 0) {
+      onAddProject(name, amount, reviewers);
+      // call smart contract api
+      
+      setName('');
+      setAmount(0);
+      setReviewers(['']);
     }
   };
 
@@ -43,6 +52,15 @@ const ProjectForm = () => {
           sx={{ mb: 2 }}
           fullWidth
           value={name}
+        />
+        <StyledTextField
+          label="Amount"
+          onChange={(e) => setAmount(Number(e.target.value))}
+          required
+          variant="outlined"
+          sx={{ mb: 2 }}
+          fullWidth
+          value={amount}
         />
         <StyledTextField
           label="Threshold"
