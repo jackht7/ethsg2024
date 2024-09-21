@@ -4,8 +4,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 
-import { FormControlLabel } from '@mui/material';
-import Checkbox from '@mui/material/Checkbox';
+import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -33,8 +32,8 @@ interface Job {
 }
 
 const JobsTable = () => {
-  const { project: projectId, job } = useParams();
-  const [jobs, setJobs] = useState<Project[]>([]);
+  const { project: projectId, job: jobName } = useParams();
+  const [jobs, setJobs] = useState<Job[]>([]);
   const { address, chainId } = useAccount();
   const signer = useEthersSigner();
 
@@ -90,20 +89,13 @@ const JobsTable = () => {
               <TableCell component="th" scope="row">
                 {job.name}
               </TableCell>
-              <TableCell align="right">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      size="small"
-                      sx={{
-                        '&.Mui-checked': {
-                          color: '#181C14',
-                        },
-                      }}
-                    />
-                  }
-                  label="Approve"
-                />
+              <TableCell align="center" sx={{ display: 'flex', gap: 2 }}>
+                <Button size="small" variant="outlined" color="default">
+                  Approve
+                </Button>
+                <Button size="small" variant="outlined" color="default">
+                  Reject
+                </Button>
               </TableCell>
               <TableCell align="right">{job.metadata}</TableCell>
               <TableCell align="right">{formatCurrency(job.amount)}</TableCell>
