@@ -1,19 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Button, Container, Dialog, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Button, Container, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material';
 
 import JobForm from './components/JobForm';
 import JobsTable from './components/JobsTable';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 
-interface Job {
-  name: string;
-  amount: number;
-}
-
 const Jobs = () => {
   const [modal, setModal] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
 
   const handleModalOpen = () => {
     setModal(true);
@@ -26,15 +22,37 @@ const Jobs = () => {
   return (
     <>
       <Box>
-        <Container style={{ margin: '20px',display: 'flex', justifyContent: 'space-between' }}>
+        <Container style={{
+          margin: '25px auto',
+          display: 'flex',
+          justifyContent: 'space-between'
+        }}>
           <Button variant="contained" onClick={handleModalOpen}>
             Create job
           </Button>
-          <Button variant="contained" startIcon={<LocalAtmIcon />}>
-            Deposit
-          </Button>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <TextField
+              type="number"
+              placeholder="Total Balance"
+              value={depositAmount}
+              onChange={(e) => setDepositAmount(e.target.value)}
+              style={{ marginRight: '20px' }}
+              sx={{
+                "& fieldset": { border: 'none' },
+                '& .MuiInputBase-input': {
+                  color: 'white',
+                  borderBottom: '1px solid white',
+                  borderRadius: 0,
+                },
+              }}
+              variant='standard'
+            />
+            <Button variant="contained" startIcon={<LocalAtmIcon />}>
+              Deposit
+            </Button>
+          </div>
         </Container>
-        <Container style={{ margin: '20px' }}>
+        <Container>
           <JobsTable />
         </Container>
       </Box>
