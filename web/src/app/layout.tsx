@@ -1,12 +1,13 @@
 import './globals.css';
+import '@rainbow-me/rainbowkit/styles.css';
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 
-import MetaMaskContextProvider from '@/app/components/MetaMaskContextProvider';
+import Navbar from '@/app/components/Navbar';
+import Providers from '@/app/components/RainbowProvider';
 
 import theme from './theme';
 
@@ -25,11 +26,12 @@ const RootLayout = ({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <MetaMaskContextProvider>
-          <AppRouterCacheProvider>
-            <ThemeProvider theme={theme}>{children}</ThemeProvider>
-          </AppRouterCacheProvider>
-        </MetaMaskContextProvider>
+        <Providers>
+          <ThemeProvider theme={theme}>
+            <Navbar />
+            {children}
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
