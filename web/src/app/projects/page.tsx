@@ -20,12 +20,16 @@ const Projects = () => {
   return (
     <>
       <Box>
-        <Container style={{ margin: '20px' }}>
+        <Container style={{
+          margin: '10px auto',
+          display: 'flex',
+          justifyContent: 'space-between'
+        }}>
           <Button variant="contained" onClick={handleModalOpen}>
             Create project
           </Button>
         </Container>
-        <Container style={{ margin: '20px' }}>
+        <Container style={{}}>
           <ProjectsTable />
         </Container>
       </Box>
