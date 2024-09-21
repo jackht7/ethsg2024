@@ -1,18 +1,14 @@
 const { SignProtocolClient, SpMode, EvmChains } = require('@ethsign/sp-sdk');
 const { privateKeyToAccount } = require('viem/accounts');
-const ethers = require('ethers');
 
 // Initialize Ethereum provider and wallet
-const rpcUrl = 'https://rpc.chiadochain.net'; // Replace with your actual RPC URL
-const privateKey = ''; // Replace with your actual private key
-const provider = new ethers.JsonRpcProvider(rpcUrl);
-const wallet = new ethers.Wallet(privateKey, provider);
+const privateKey = '0xa87a2e9936b1f4d5e69391fcbd5bb1f732148c0f981d977d95ded1477241690b'; // Replace with your actual private key
 
 const client = new SignProtocolClient(SpMode.OnChain, {
   chain: EvmChains.gnosisChiado,
   account: privateKeyToAccount(privateKey), // Optional for Node.js environment
 });
-const schemaId = '0x50';
+const schemaId = '0x63';
 
 // Define attestation data based on your schema
 const attestationData = {

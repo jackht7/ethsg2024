@@ -35,7 +35,9 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     uint public nextProjectId;
     uint public nextJobId;
 
-    uint256 public threshold = 2;
+    uint public threshold = 2;
+
+    mapping(uint => mapping(uint => uint)) public attestationCount; // projectId => jobId => count
 
     error NumberBelowThreshold();
     error UnsupportedOperation();
@@ -219,11 +221,14 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         Attestation memory attestation = ISP(_msgSender()).getAttestation(
             attestationId
         );
-        if (_checkThreshold(abi.decode(attestation.data, (uint256)))) {
-            _finalizeJob(
-                abi.decode(attestation.data, (uint256)), // projectId
-                abi.decode(attestation.data, (uint256)) // jobId
-            );
+        data = attestation.data;
+        (uint projectId, uint jobId) = abi.decode(
+            attestation.data,
+            (uint256, uint256)
+        ); // projectId and jobId
+        attestationCount[projectId][jobId]++;
+        if (_checkThreshold(attestationCount[projectId][jobId])) {
+            _finalizeJob(projectId, jobId);
         }
     }
 
