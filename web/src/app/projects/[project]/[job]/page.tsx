@@ -1,15 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, Container, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { useAccount } from 'wagmi';
 
 import JobForm from './components/JobForm';
 import JobsTable from './components/JobsTable';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import { useEthersSigner } from '@/app/_lib/wagmi-signer';
+import { Hook__factory, NFT__factory } from '@/../typechain';
+import { config } from '@/app/_lib/networkConfig';
+import { useParams } from 'next/navigation';
 
 const Jobs = () => {
   const [modal, setModal] = useState(false);
-  const [depositAmount, setDepositAmount] = useState('');
+  const [projectAmount, setProjectAmount] = useState();
+  const { address, chainId } = useAccount();
+  const { project: projectIdd } = useParams();
+
+  const signer = useEthersSigner();
 
   const handleModalOpen = () => {
     setModal(true);
@@ -18,6 +27,36 @@ const Jobs = () => {
   const handleModalClose = () => {
     setModal(false);
   };
+  
+  // useEffect(() => {
+  //   const fetchProjects = async () => {
+  //     console.log('fetchProjects');
+  //     if (!chainId) return;
+  //     const hookContractFactory = new Hook__factory(signer);
+  //     const hookContract = hookContractFactory.attach(
+  //       config[chainId?.toString() as keyof typeof config].hookContractAddress
+  //     );
+
+  //     // const nextProjectIdFunc = hookContract.getFunction('nextProjectId');
+  //     const getProjectFunc = hookContract.getFunction('getProject');
+  //     // const attestationCountFunc = hookContract.getFunction('attestationCount');
+  //     // const nextProjectId = Number(await nextProjectIdFunc.call(signer));
+  //     // const projects = [];
+  //     console.log(projectIdd);
+  //     const [projectId, name, description, amount, jobs] = await getProjectFunc(BigInt(projectIdd as string));
+  //     console.log(amount);
+  //     return amount;
+  //   }
+    
+  //   const interval = setInterval(() => {
+  //     fetchProjects().then((res) => {
+  //       if (res) setProjectAmount(res);
+  //     });
+  //   }, 5000);
+
+  //   console.log(projectAmount);
+  //   return () => clearInterval(interval);
+  // }, [address, chainId, projectIdd]);
 
   return (
     <>
@@ -31,11 +70,11 @@ const Jobs = () => {
             Create job
           </Button>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <TextField
+            {/* <TextField
               type="number"
               placeholder="Total Balance"
-              value={depositAmount}
-              onChange={(e) => setDepositAmount(e.target.value)}
+              value={projectAmount}
+              // onChange={(e) => setDepositAmount(e.target.value)}
               style={{ marginRight: '20px' }}
               sx={{
                 "& fieldset": { border: 'none' },
@@ -46,7 +85,9 @@ const Jobs = () => {
                 },
               }}
               variant='standard'
-            />
+              readOnly={true}
+            />  */}
+            {/* <p>{projectAmount}</p> */}
             <Button variant="contained" startIcon={<LocalAtmIcon />}>
               Deposit
             </Button>
