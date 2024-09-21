@@ -24,6 +24,8 @@ import { config } from '@/app/_lib/networkConfig';
 import { formatAddress, formatCurrency } from '@/app/_lib/utils';
 import { useEthersSigner } from '@/app/_lib/wagmi-signer';
 
+import Nft from './Nft';
+
 const StyledTableCell = styled(TableCell)({
   color: 'white',
 });
@@ -43,6 +45,38 @@ const JobsTable = () => {
   const signer = useEthersSigner();
   const [signClient, setSignClient] = useState<SignProtocolClient>();
 
+  // const Nft = ({ jobId }: { jobId: string }) => {
+  //   const [token, setToken] = useState('');
+  //   useEffect(() => {
+  //     const fetchNfts = async () => {
+  //       if (!chainId) return;
+  //       const nftContractFactory = new NFT__factory(signer);
+  //       const nftContract = nftContractFactory.attach(
+  //         config[chainId?.toString() as keyof typeof config].nftContractAddress
+  //       );
+
+  //       const tokenUriFunc = nftContract.getFunction('tokenURI');
+  //       const tokenResponse = await tokenUriFunc(projectId + jobId);
+
+  //       return tokenResponse;
+  //     };
+
+  //     const interval = setInterval(() => {
+  //       fetchNfts().then((res) => setToken(res));
+  //     }, 3000);
+
+  //     return () => clearInterval(interval);
+  //   }, [address, chainId, signer]);
+  //   console.log('token', token);
+  //   {
+  //     token && (
+  //       <Link target="_blank" href={token}>
+  //         {formatAddress(token.replace('https://gateway.pinata.cloud/ipfs/', '').toString())}
+  //       </Link>
+  //     );
+  //   }
+  // };
+
   useEffect(() => {
     const privateKey = (
       address == process.env.NEXT_PUBLIC_CLIENT_ADDRESS
@@ -51,13 +85,16 @@ const JobsTable = () => {
           ? process.env.NEXT_PUBLIC_CONTRACTOR_PRIVATE_KEY
           : ''
     ) as Address;
-    const newClient = new SignProtocolClient(SpMode.OnChain, {
-      chain: EvmChains.gnosisChiado,
-      account: privateKeyToAccount(privateKey),
-      rpcUrl: 'https://rpc.chiado.gnosis.gateway.fm',
-    } as OnChainClientOptions);
 
-    setSignClient(newClient);
+    if (privateKey) {
+      const newClient = new SignProtocolClient(SpMode.OnChain, {
+        chain: EvmChains.gnosisChiado,
+        account: privateKeyToAccount(privateKey),
+        rpcUrl: 'https://rpc.chiado.gnosis.gateway.fm',
+      } as OnChainClientOptions);
+
+      setSignClient(newClient);
+    }
   }, [address, chainId]);
 
   useEffect(() => {
@@ -90,28 +127,7 @@ const JobsTable = () => {
       fetchJobs().then((res) => {
         if (res) setJobs(res);
       });
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [address, chainId, signer]);
-
-  useEffect(() => {
-    const fetchNfts = async () => {
-      if (!chainId) return;
-      const nftContractFactory = new NFT__factory(signer);
-      const nftContract = nftContractFactory.attach(
-        config[chainId?.toString() as keyof typeof config].nftContractAddress
-      );
-
-      const nextJobIdFunc = nftContract.getFunction('tokenURI');
-      return [];
-    };
-
-    const interval = setInterval(() => {
-      fetchNfts().then((res) => {
-        if (res) setJobs(res);
-      });
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [address, chainId, signer]);
@@ -121,7 +137,7 @@ const JobsTable = () => {
 
     const attestationData = {
       project_id: BigInt(projectId as string),
-      job_id: BigInt(1),
+      job_id: BigInt(job.jobId),
       timestamp: BigInt(Math.floor(Date.now() / 1000)),
       amount: BigInt(job.amount),
       action: true,
@@ -152,31 +168,46 @@ const JobsTable = () => {
             <StyledTableCell align="right">Image Hash</StyledTableCell>
             <StyledTableCell align="right">Total Amount (SGD)</StyledTableCell>
             <StyledTableCell align="right">Action</StyledTableCell>
+            <StyledTableCell align="right">NFT</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody style={{ background: 'white' }}>
-          {jobs?.map((job) => (
-            <TableRow key={job.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell component="th" scope="row">
-                {job.name}
-              </TableCell>
+          {jobs &&
+            jobs.length > 0 &&
+            jobs.map((job) => {
+              const jodIdString = job.jobId.toString() as string;
 
-              <TableCell align="right">
-                <Link target="_blank" href={`${job.metadata}`}>
-                  {formatAddress(job.metadata.replace('https://gateway.pinata.cloud/ipfs/', '').toString())}
-                </Link>
-              </TableCell>
-              <TableCell align="right">{formatCurrency(job.amount)}</TableCell>
-              <TableCell align="right" sx={{ display: 'flex', gap: 2 }}>
-                <Button size="small" variant="outlined" color="default" onClick={async () => await handleApprove(job)}>
-                  Approve
-                </Button>
-                <Button size="small" variant="outlined" color="default">
-                  Reject
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+              return (
+                <TableRow key={job.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell component="th" scope="row">
+                    {job.name}
+                  </TableCell>
+
+                  <TableCell align="right">
+                    <Link target="_blank" href={`${job.metadata}`}>
+                      {formatAddress(job.metadata.replace('https://gateway.pinata.cloud/ipfs/', '').toString())}
+                    </Link>
+                  </TableCell>
+                  <TableCell align="right">{formatCurrency(job.amount)}</TableCell>
+                  <TableCell align="right" sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="default"
+                      onClick={async () => await handleApprove(job)}
+                    >
+                      Approve
+                    </Button>
+                    <Button size="small" variant="outlined" color="default">
+                      Reject
+                    </Button>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Nft jobId={jodIdString}></Nft>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
     </TableContainer>
