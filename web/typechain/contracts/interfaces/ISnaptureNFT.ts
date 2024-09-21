@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type {
   BaseContract,
+  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
@@ -23,7 +24,10 @@ import type {
 export interface ISnaptureNFTInterface extends Interface {
   getFunction(nameOrSignature: "mint"): FunctionFragment;
 
-  encodeFunctionData(functionFragment: "mint", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "mint",
+    values: [AddressLike, BigNumberish, BigNumberish, string]
+  ): string;
 
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
 }
@@ -71,7 +75,16 @@ export interface ISnaptureNFT extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  mint: TypedContractMethod<[to: AddressLike], [void], "nonpayable">;
+  mint: TypedContractMethod<
+    [
+      to: AddressLike,
+      projectId: BigNumberish,
+      jobId: BigNumberish,
+      tokenUri: string
+    ],
+    [void],
+    "nonpayable"
+  >;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
@@ -79,7 +92,16 @@ export interface ISnaptureNFT extends BaseContract {
 
   getFunction(
     nameOrSignature: "mint"
-  ): TypedContractMethod<[to: AddressLike], [void], "nonpayable">;
+  ): TypedContractMethod<
+    [
+      to: AddressLike,
+      projectId: BigNumberish,
+      jobId: BigNumberish,
+      tokenUri: string
+    ],
+    [void],
+    "nonpayable"
+  >;
 
   filters: {};
 }

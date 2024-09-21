@@ -21,30 +21,24 @@ import type {
   TypedLogDescription,
   TypedListener,
   TypedContractMethod,
-} from "../common";
+} from "../../../../../common";
 
-export interface NFTInterface extends Interface {
+export interface ERC721URIStorageInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "approve"
       | "balanceOf"
       | "getApproved"
-      | "hookAddress"
       | "isApprovedForAll"
-      | "mint"
       | "name"
-      | "owner"
       | "ownerOf"
-      | "renounceOwnership"
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
       | "setApprovalForAll"
-      | "setHookAddress"
       | "supportsInterface"
       | "symbol"
       | "tokenURI"
       | "transferFrom"
-      | "transferOwnership"
   ): FunctionFragment;
 
   getEvent(
@@ -53,7 +47,6 @@ export interface NFTInterface extends Interface {
       | "ApprovalForAll"
       | "BatchMetadataUpdate"
       | "MetadataUpdate"
-      | "OwnershipTransferred"
       | "Transfer"
   ): EventFragment;
 
@@ -70,26 +63,13 @@ export interface NFTInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "hookAddress",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [AddressLike, AddressLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "mint",
-    values: [AddressLike, BigNumberish, BigNumberish, string]
-  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "safeTransferFrom(address,address,uint256)",
@@ -104,10 +84,6 @@ export interface NFTInterface extends Interface {
     values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: "setHookAddress",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
@@ -120,10 +96,6 @@ export interface NFTInterface extends Interface {
     functionFragment: "transferFrom",
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [AddressLike]
-  ): string;
 
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
@@ -132,21 +104,11 @@ export interface NFTInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "hookAddress",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "renounceOwnership",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom(address,address,uint256)",
     data: BytesLike
@@ -160,10 +122,6 @@ export interface NFTInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setHookAddress",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
@@ -171,10 +129,6 @@ export interface NFTInterface extends Interface {
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferFrom",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
 }
@@ -247,19 +201,6 @@ export namespace MetadataUpdateEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace OwnershipTransferredEvent {
-  export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
-  export type OutputTuple = [previousOwner: string, newOwner: string];
-  export interface OutputObject {
-    previousOwner: string;
-    newOwner: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
 export namespace TransferEvent {
   export type InputTuple = [
     from: AddressLike,
@@ -278,11 +219,11 @@ export namespace TransferEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface NFT extends BaseContract {
-  connect(runner?: ContractRunner | null): NFT;
+export interface ERC721URIStorage extends BaseContract {
+  connect(runner?: ContractRunner | null): ERC721URIStorage;
   waitForDeployment(): Promise<this>;
 
-  interface: NFTInterface;
+  interface: ERC721URIStorageInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -331,32 +272,15 @@ export interface NFT extends BaseContract {
 
   getApproved: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
 
-  hookAddress: TypedContractMethod<[], [string], "view">;
-
   isApprovedForAll: TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
     [boolean],
     "view"
   >;
 
-  mint: TypedContractMethod<
-    [
-      to: AddressLike,
-      projectId: BigNumberish,
-      jobId: BigNumberish,
-      tokenUri: string
-    ],
-    [void],
-    "nonpayable"
-  >;
-
   name: TypedContractMethod<[], [string], "view">;
 
-  owner: TypedContractMethod<[], [string], "view">;
-
   ownerOf: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
-
-  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
   "safeTransferFrom(address,address,uint256)": TypedContractMethod<
     [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
@@ -381,12 +305,6 @@ export interface NFT extends BaseContract {
     "nonpayable"
   >;
 
-  setHookAddress: TypedContractMethod<
-    [_hookAddress: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
   supportsInterface: TypedContractMethod<
     [interfaceId: BytesLike],
     [boolean],
@@ -399,12 +317,6 @@ export interface NFT extends BaseContract {
 
   transferFrom: TypedContractMethod<
     [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  transferOwnership: TypedContractMethod<
-    [newOwner: AddressLike],
     [void],
     "nonpayable"
   >;
@@ -427,9 +339,6 @@ export interface NFT extends BaseContract {
     nameOrSignature: "getApproved"
   ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
   getFunction(
-    nameOrSignature: "hookAddress"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "isApprovedForAll"
   ): TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
@@ -437,29 +346,11 @@ export interface NFT extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "mint"
-  ): TypedContractMethod<
-    [
-      to: AddressLike,
-      projectId: BigNumberish,
-      jobId: BigNumberish,
-      tokenUri: string
-    ],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
     nameOrSignature: "name"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "ownerOf"
   ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
-  getFunction(
-    nameOrSignature: "renounceOwnership"
-  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "safeTransferFrom(address,address,uint256)"
   ): TypedContractMethod<
@@ -487,9 +378,6 @@ export interface NFT extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "setHookAddress"
-  ): TypedContractMethod<[_hookAddress: AddressLike], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "supportsInterface"
   ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
   getFunction(
@@ -505,9 +393,6 @@ export interface NFT extends BaseContract {
     [void],
     "nonpayable"
   >;
-  getFunction(
-    nameOrSignature: "transferOwnership"
-  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
 
   getEvent(
     key: "Approval"
@@ -536,13 +421,6 @@ export interface NFT extends BaseContract {
     MetadataUpdateEvent.InputTuple,
     MetadataUpdateEvent.OutputTuple,
     MetadataUpdateEvent.OutputObject
-  >;
-  getEvent(
-    key: "OwnershipTransferred"
-  ): TypedContractEvent<
-    OwnershipTransferredEvent.InputTuple,
-    OwnershipTransferredEvent.OutputTuple,
-    OwnershipTransferredEvent.OutputObject
   >;
   getEvent(
     key: "Transfer"
@@ -595,17 +473,6 @@ export interface NFT extends BaseContract {
       MetadataUpdateEvent.InputTuple,
       MetadataUpdateEvent.OutputTuple,
       MetadataUpdateEvent.OutputObject
-    >;
-
-    "OwnershipTransferred(address,address)": TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
-    >;
-    OwnershipTransferred: TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
     >;
 
     "Transfer(address,address,uint256)": TypedContractEvent<

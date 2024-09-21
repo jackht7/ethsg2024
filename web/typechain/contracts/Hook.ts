@@ -53,8 +53,11 @@ export declare namespace Hook {
 export interface HookInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "_finalizeJob"
+      | "attestationCount"
       | "createJob"
       | "createProject"
+      | "debugMessage"
       | "deposit"
       | "didReceiveAttestation(address,uint64,uint64,bytes)"
       | "didReceiveAttestation(address,uint64,uint64,address,uint256,bytes)"
@@ -89,12 +92,24 @@ export interface HookInterface extends Interface {
   ): EventFragment;
 
   encodeFunctionData(
+    functionFragment: "_finalizeJob",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attestationCount",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "createJob",
     values: [BigNumberish, string, string, BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "createProject",
     values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "debugMessage",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "deposit",
@@ -142,7 +157,10 @@ export interface HookInterface extends Interface {
     functionFragment: "getProject",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "nextJobId", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "nextJobId",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "nextProjectId",
     values?: undefined
@@ -180,9 +198,21 @@ export interface HookInterface extends Interface {
     values: [AddressLike]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "_finalizeJob",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attestationCount",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "createJob", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "createProject",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "debugMessage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
@@ -400,6 +430,18 @@ export interface Hook extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  _finalizeJob: TypedContractMethod<
+    [projectId: BigNumberish, jobId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  attestationCount: TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish],
+    [bigint],
+    "view"
+  >;
+
   createJob: TypedContractMethod<
     [
       _projectId: BigNumberish,
@@ -417,6 +459,8 @@ export interface Hook extends BaseContract {
     [void],
     "nonpayable"
   >;
+
+  debugMessage: TypedContractMethod<[], [string], "view">;
 
   deposit: TypedContractMethod<
     [projectId: BigNumberish, amount: BigNumberish],
@@ -490,7 +534,7 @@ export interface Hook extends BaseContract {
     "view"
   >;
 
-  nextJobId: TypedContractMethod<[], [bigint], "view">;
+  nextJobId: TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
 
   nextProjectId: TypedContractMethod<[], [bigint], "view">;
 
@@ -549,6 +593,20 @@ export interface Hook extends BaseContract {
   ): T;
 
   getFunction(
+    nameOrSignature: "_finalizeJob"
+  ): TypedContractMethod<
+    [projectId: BigNumberish, jobId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "attestationCount"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish],
+    [bigint],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "createJob"
   ): TypedContractMethod<
     [
@@ -568,6 +626,9 @@ export interface Hook extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "debugMessage"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "deposit"
   ): TypedContractMethod<
@@ -650,7 +711,7 @@ export interface Hook extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "nextJobId"
-  ): TypedContractMethod<[], [bigint], "view">;
+  ): TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
   getFunction(
     nameOrSignature: "nextProjectId"
   ): TypedContractMethod<[], [bigint], "view">;

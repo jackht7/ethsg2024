@@ -22,6 +22,9 @@ contract NFT is ERC721URIStorage, Ownable {
         string memory combinedId = string(abi.encodePacked(Strings.toString(projectId), Strings.toString(jobId)));
         uint256 tokenId = stringToUint(combinedId);
 
+        //request address of this tokenId is not exist
+        require(_ownerOf(tokenId) == address(0), "tokenId already exists");
+
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, tokenUri);
     }
