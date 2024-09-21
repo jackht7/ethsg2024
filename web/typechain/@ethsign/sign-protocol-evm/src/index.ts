@@ -3,7 +3,3 @@
 /* eslint-disable */
 import type * as interfaces from "./interfaces";
 export type { interfaces };
-export type { Hook } from "./Hook";
-export type { Lock } from "./Lock";
-export type { MockUSDC } from "./MockUSDC";
-export type { NFT } from "./NFT";

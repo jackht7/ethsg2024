@@ -1,8 +1,13 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 import { Button, Container, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
+
+import { Hook__factory } from '@/../typechain';
+import { config } from '@/app/_lib/networkConfig';
+import { useEthersSigner } from '@/app/_lib/wagmi-signer';
 
 const StyledTextField = styled(TextField)({
   input: { color: 'white' },
@@ -18,7 +23,12 @@ const ProjectForm = ({ onAddProject }: ProjectFormProps) => {
   const [threshold, setThreshold] = useState(1);
   const [reviewers, setReviewers] = useState(['']);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const signer = useEthersSigner();
+  const { address, chainId } = useAccount();
+  const hookContractFactory = new Hook__factory(signer);
+  const hookContract = hookContractFactory.attach(config[chainId?.toString() as keyof typeof config].contractAddress);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (name && reviewers.length > 0) {
       onAddProject(name, amount, reviewers);

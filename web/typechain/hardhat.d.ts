@@ -14,6 +14,18 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "ISP",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ISP__factory>;
+    getContractFactory(
+      name: "ISPHook",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ISPHook__factory>;
+    getContractFactory(
+      name: "IVersionable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IVersionable__factory>;
+    getContractFactory(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
@@ -86,10 +98,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ISnaptureNFT__factory>;
     getContractFactory(
-      name: "Lock",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Lock__factory>;
-    getContractFactory(
       name: "MockUSDC",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockUSDC__factory>;
@@ -97,7 +105,26 @@ declare module "hardhat/types/runtime" {
       name: "NFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NFT__factory>;
+    getContractFactory(
+      name: "WhitelistMananger",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.WhitelistMananger__factory>;
 
+    getContractAt(
+      name: "ISP",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ISP>;
+    getContractAt(
+      name: "ISPHook",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ISPHook>;
+    getContractAt(
+      name: "IVersionable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IVersionable>;
     getContractAt(
       name: "Ownable",
       address: string | ethers.Addressable,
@@ -189,11 +216,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ISnaptureNFT>;
     getContractAt(
-      name: "Lock",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.Lock>;
-    getContractAt(
       name: "MockUSDC",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -203,7 +225,24 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.NFT>;
+    getContractAt(
+      name: "WhitelistMananger",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.WhitelistMananger>;
 
+    deployContract(
+      name: "ISP",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ISP>;
+    deployContract(
+      name: "ISPHook",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ISPHook>;
+    deployContract(
+      name: "IVersionable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IVersionable>;
     deployContract(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -277,10 +316,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ISnaptureNFT>;
     deployContract(
-      name: "Lock",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Lock>;
-    deployContract(
       name: "MockUSDC",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MockUSDC>;
@@ -288,7 +323,26 @@ declare module "hardhat/types/runtime" {
       name: "NFT",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.NFT>;
+    deployContract(
+      name: "WhitelistMananger",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.WhitelistMananger>;
 
+    deployContract(
+      name: "ISP",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ISP>;
+    deployContract(
+      name: "ISPHook",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ISPHook>;
+    deployContract(
+      name: "IVersionable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IVersionable>;
     deployContract(
       name: "Ownable",
       args: any[],
@@ -380,11 +434,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ISnaptureNFT>;
     deployContract(
-      name: "Lock",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Lock>;
-    deployContract(
       name: "MockUSDC",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -394,6 +443,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.NFT>;
+    deployContract(
+      name: "WhitelistMananger",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.WhitelistMananger>;
 
     // default types
     getContractFactory(
