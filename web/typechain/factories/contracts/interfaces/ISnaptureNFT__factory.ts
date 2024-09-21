@@ -16,6 +16,21 @@ const _abi = [
         name: "to",
         type: "address",
       },
+      {
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "jobId",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "tokenUri",
+        type: "string",
+      },
     ],
     name: "mint",
     outputs: [],
