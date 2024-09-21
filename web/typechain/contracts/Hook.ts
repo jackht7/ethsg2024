@@ -56,8 +56,11 @@ export interface HookInterface extends Interface {
       | "createJob"
       | "createProject"
       | "deposit"
+      | "didReceiveAttestation(address,uint64,uint64,bytes)"
+      | "didReceiveAttestation(address,uint64,uint64,address,uint256,bytes)"
+      | "didReceiveRevocation(address,uint64,uint64,bytes)"
+      | "didReceiveRevocation(address,uint64,uint64,address,uint256,bytes)"
       | "emergencyWithdraw"
-      | "finalizeJob"
       | "getJob"
       | "getProject"
       | "nextJobId"
@@ -66,9 +69,13 @@ export interface HookInterface extends Interface {
       | "owner"
       | "projects"
       | "renounceOwnership"
+      | "setThreshold"
+      | "setWhitelist"
       | "terminateProject"
+      | "threshold"
       | "transferOwnership"
       | "usdc"
+      | "whitelist"
   ): FunctionFragment;
 
   getEvent(
@@ -94,12 +101,38 @@ export interface HookInterface extends Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "emergencyWithdraw",
-    values: [BigNumberish, BigNumberish, string]
+    functionFragment: "didReceiveAttestation(address,uint64,uint64,bytes)",
+    values: [AddressLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "finalizeJob",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "didReceiveAttestation(address,uint64,uint64,address,uint256,bytes)",
+    values: [
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      AddressLike,
+      BigNumberish,
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "didReceiveRevocation(address,uint64,uint64,bytes)",
+    values: [AddressLike, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "didReceiveRevocation(address,uint64,uint64,address,uint256,bytes)",
+    values: [
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      AddressLike,
+      BigNumberish,
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "emergencyWithdraw",
+    values: [BigNumberish, BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "getJob",
@@ -125,14 +158,27 @@ export interface HookInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setThreshold",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setWhitelist",
+    values: [AddressLike, boolean]
+  ): string;
+  encodeFunctionData(
     functionFragment: "terminateProject",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "threshold", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "usdc", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "whitelist",
+    values: [AddressLike]
+  ): string;
 
   decodeFunctionResult(functionFragment: "createJob", data: BytesLike): Result;
   decodeFunctionResult(
@@ -141,11 +187,23 @@ export interface HookInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "emergencyWithdraw",
+    functionFragment: "didReceiveAttestation(address,uint64,uint64,bytes)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "finalizeJob",
+    functionFragment: "didReceiveAttestation(address,uint64,uint64,address,uint256,bytes)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "didReceiveRevocation(address,uint64,uint64,bytes)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "didReceiveRevocation(address,uint64,uint64,address,uint256,bytes)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "emergencyWithdraw",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getJob", data: BytesLike): Result;
@@ -163,14 +221,24 @@ export interface HookInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setThreshold",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setWhitelist",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "terminateProject",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "threshold", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "usdc", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "whitelist", data: BytesLike): Result;
 }
 
 export namespace DepositEvent {
@@ -356,14 +424,56 @@ export interface Hook extends BaseContract {
     "payable"
   >;
 
-  emergencyWithdraw: TypedContractMethod<
-    [projectId: BigNumberish, amount: BigNumberish, reason: string],
+  "didReceiveAttestation(address,uint64,uint64,bytes)": TypedContractMethod<
+    [
+      attester: AddressLike,
+      arg1: BigNumberish,
+      attestationId: BigNumberish,
+      arg3: BytesLike
+    ],
     [void],
-    "nonpayable"
+    "payable"
   >;
 
-  finalizeJob: TypedContractMethod<
-    [projectId: BigNumberish, jobId: BigNumberish],
+  "didReceiveAttestation(address,uint64,uint64,address,uint256,bytes)": TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
+      arg3: AddressLike,
+      arg4: BigNumberish,
+      arg5: BytesLike
+    ],
+    [void],
+    "view"
+  >;
+
+  "didReceiveRevocation(address,uint64,uint64,bytes)": TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
+      arg3: BytesLike
+    ],
+    [void],
+    "payable"
+  >;
+
+  "didReceiveRevocation(address,uint64,uint64,address,uint256,bytes)": TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
+      arg3: AddressLike,
+      arg4: BigNumberish,
+      arg5: BytesLike
+    ],
+    [void],
+    "view"
+  >;
+
+  emergencyWithdraw: TypedContractMethod<
+    [projectId: BigNumberish, amount: BigNumberish, reason: string],
     [void],
     "nonpayable"
   >;
@@ -404,11 +514,25 @@ export interface Hook extends BaseContract {
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
+  setThreshold: TypedContractMethod<
+    [threshold_: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setWhitelist: TypedContractMethod<
+    [attester: AddressLike, allowed: boolean],
+    [void],
+    "nonpayable"
+  >;
+
   terminateProject: TypedContractMethod<
     [projectId: BigNumberish],
     [void],
     "nonpayable"
   >;
+
+  threshold: TypedContractMethod<[], [bigint], "view">;
 
   transferOwnership: TypedContractMethod<
     [newOwner: AddressLike],
@@ -417,6 +541,8 @@ export interface Hook extends BaseContract {
   >;
 
   usdc: TypedContractMethod<[], [string], "view">;
+
+  whitelist: TypedContractMethod<[attester: AddressLike], [boolean], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
@@ -450,16 +576,61 @@ export interface Hook extends BaseContract {
     "payable"
   >;
   getFunction(
+    nameOrSignature: "didReceiveAttestation(address,uint64,uint64,bytes)"
+  ): TypedContractMethod<
+    [
+      attester: AddressLike,
+      arg1: BigNumberish,
+      attestationId: BigNumberish,
+      arg3: BytesLike
+    ],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "didReceiveAttestation(address,uint64,uint64,address,uint256,bytes)"
+  ): TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
+      arg3: AddressLike,
+      arg4: BigNumberish,
+      arg5: BytesLike
+    ],
+    [void],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "didReceiveRevocation(address,uint64,uint64,bytes)"
+  ): TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
+      arg3: BytesLike
+    ],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "didReceiveRevocation(address,uint64,uint64,address,uint256,bytes)"
+  ): TypedContractMethod<
+    [
+      arg0: AddressLike,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
+      arg3: AddressLike,
+      arg4: BigNumberish,
+      arg5: BytesLike
+    ],
+    [void],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "emergencyWithdraw"
   ): TypedContractMethod<
     [projectId: BigNumberish, amount: BigNumberish, reason: string],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "finalizeJob"
-  ): TypedContractMethod<
-    [projectId: BigNumberish, jobId: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -508,14 +679,30 @@ export interface Hook extends BaseContract {
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "setThreshold"
+  ): TypedContractMethod<[threshold_: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setWhitelist"
+  ): TypedContractMethod<
+    [attester: AddressLike, allowed: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "terminateProject"
   ): TypedContractMethod<[projectId: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "threshold"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "usdc"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "whitelist"
+  ): TypedContractMethod<[attester: AddressLike], [boolean], "view">;
 
   getEvent(
     key: "Deposit"

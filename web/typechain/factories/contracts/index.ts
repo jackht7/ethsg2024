@@ -3,6 +3,6 @@
 /* eslint-disable */
 export * as interfaces from "./interfaces";
 export { Hook__factory } from "./Hook__factory";
-export { Lock__factory } from "./Lock__factory";
 export { MockUSDC__factory } from "./MockUSDC__factory";
 export { NFT__factory } from "./NFT__factory";
+export { WhitelistMananger__factory } from "./WhitelistMananger__factory";
