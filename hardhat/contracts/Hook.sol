@@ -3,7 +3,9 @@ pragma solidity ^0.8.27;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ISP} from "@ethsign/sign-protocol-evm/src/interfaces/ISP.sol";
 import {ISPHook} from "@ethsign/sign-protocol-evm/src/interfaces/ISPHook.sol";
+import {Attestation} from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
 import "./interfaces/ISnaptureNFT.sol";
 import "./WhitelistMananger.sol";
 
@@ -33,6 +35,10 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
     mapping(uint => Project) public projects;
     uint public nextProjectId;
     uint public nextJobId;
+
+    uint256 public threshold;
+
+    error NumberBelowThreshold();
 
     event Deposit(address indexed user, uint projectId, uint256 amount);
     event Withdrawn(
@@ -162,7 +168,7 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         return (job.jobId, job.name, job.description, job.amount, job.metadata);
     }
 
-    function finalizeJob(uint projectId, uint jobId) external {
+    function _finalizeJob(uint projectId, uint jobId) internal {
         require(projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[projectId];
         require(jobId < project.jobs.length, "Job does not exist.");
@@ -188,13 +194,32 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         emit Withdrawn(msg.sender, projectId, amount, reason);
     }
 
+    function setThreshold(uint256 threshold_) external onlyOwner {
+        threshold = threshold_;
+    }
+
+    function _checkThreshold(uint256 number) internal view {
+        // solhint-disable-next-line custom-errors
+        require(number >= threshold, NumberBelowThreshold());
+    }
+
     function didReceiveAttestation(
         address attester,
         uint64, // schemaId
-        uint64, // attestationId
+        uint64 attestationId, // attestationId
         bytes calldata // extraData
     ) external payable {
         _checkAttesterWhitelistStatus(attester);
+        Attestation memory attestation = ISP(_msgSender()).getAttestation(
+            attestationId
+        );
+        _checkThreshold(abi.decode(attestation.data, (uint256)));
+
+        // finalize job
+        _finalizeJob(
+            abi.decode(attestation.data, (uint256)), // projectId
+            abi.decode(attestation.data, (uint256)) // jobId
+        );
     }
 
     function didReceiveAttestation(
