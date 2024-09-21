@@ -11,7 +11,8 @@ module.exports = {
       chainId: 1337,
     },
     gnosisChiado: {
-      url: 'https://1rpc.io/gnosis',
+      url: 'https://rpc.chiado.gnosis.gateway.fm',
+      chainId: 10200,
       accounts: [process.env.DEPLOYER_PK],
     },
   },
