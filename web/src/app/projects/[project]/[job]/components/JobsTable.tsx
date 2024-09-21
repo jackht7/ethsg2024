@@ -31,6 +31,8 @@ interface Job {
   metadata: number;
 }
 
+const handleApprove = () => {};
+
 const JobsTable = () => {
   const { project: projectId, job: jobName } = useParams();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -78,9 +80,10 @@ const JobsTable = () => {
         <TableHead>
           <TableRow>
             <StyledTableCell>Job</StyledTableCell>
-            <StyledTableCell align="right">Status</StyledTableCell>
+
             <StyledTableCell align="right">Image Hash</StyledTableCell>
             <StyledTableCell align="right">Total Amount (SGD)</StyledTableCell>
+            <StyledTableCell align="right">Action</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody style={{ background: 'white' }}>
@@ -89,16 +92,17 @@ const JobsTable = () => {
               <TableCell component="th" scope="row">
                 {job.name}
               </TableCell>
-              <TableCell align="center" sx={{ display: 'flex', gap: 2 }}>
-                <Button size="small" variant="outlined" color="default">
+
+              <TableCell align="right">{job.metadata}</TableCell>
+              <TableCell align="right">{formatCurrency(job.amount)}</TableCell>
+              <TableCell align="right" sx={{ display: 'flex', gap: 2 }}>
+                <Button size="small" variant="outlined" color="default" onClick={handleApprove}>
                   Approve
                 </Button>
                 <Button size="small" variant="outlined" color="default">
                   Reject
                 </Button>
               </TableCell>
-              <TableCell align="right">{job.metadata}</TableCell>
-              <TableCell align="right">{formatCurrency(job.amount)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

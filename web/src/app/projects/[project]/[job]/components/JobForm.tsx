@@ -70,7 +70,7 @@ const JobForm = () => {
     );
     const createJobFunc = hookContract.getFunction('createJob');
 
-    const jobResponse = await createJobFunc(BigInt(projectId), name, description, amount, upload.IpfsHash);
+    const jobResponse = await createJobFunc(BigInt(projectId as string), name, description, amount, upload.IpfsHash);
     await jobResponse.wait();
   };
 
