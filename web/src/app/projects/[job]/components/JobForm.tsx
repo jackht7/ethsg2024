@@ -14,8 +14,18 @@ const StyledTextField = styled(TextField)({
   input: { color: 'white' },
 });
 
+interface Job {
+  id: string;
+  name: string;
+  amount: number;
+  image_hash: string;
+}
 
-const JobForm = () => {
+interface JobFormProps {
+  addJob: (newJob: Job) => void;
+}
+
+const JobForm: React.FC<JobFormProps> = ({ addJob }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState(0);
@@ -24,10 +34,11 @@ const JobForm = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
 
-
     event.preventDefault();
 
     console.log(name, amount, file);
+    console.log(process.env.NEXT_PUBLIC_PINATA_JWT)
+
     // call pinata api 
     const pinata = new PinataSDK({
       pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT,
@@ -43,6 +54,14 @@ const JobForm = () => {
       "jobId": jobId,
     }
     console.log(resJson);
+    const newJob: Job = {
+      id: jobId,
+      name: name,
+      amount: amount,
+      image_hash: upload.IpfsHash
+    };
+    addJob(newJob);
+    console.log(newJob);
   };
 
 

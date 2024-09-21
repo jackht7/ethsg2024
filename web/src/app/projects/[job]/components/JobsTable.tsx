@@ -12,14 +12,15 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { styled } from '@mui/material/styles';
+import Checkbox from '@mui/material/Checkbox';
+
 
 import { formatCurrency } from '@/app/_lib/utils';
+import { FormControlLabel } from '@mui/material';
 
 function createData(name: string, proposals: number, approved: number, amount: number) {
   return { name, proposals, approved, amount };
 }
-
-const rows = [createData('Slab Casting', 20, 6, 24000)];
 
 const StyledTableCell = styled(TableCell)({
   color: 'white',
@@ -29,7 +30,7 @@ interface JobsTableProps {
   jobs: any[]
 }
 
-const JobsTable = ( { jobs }: JobsTableProps) => {
+const JobsTable = ({ jobs }: JobsTableProps) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="contracts table">
@@ -47,8 +48,20 @@ const JobsTable = ( { jobs }: JobsTableProps) => {
               <TableCell component="th" scope="row">
                 {job.name}
               </TableCell>
+              <TableCell align="right">
+                <FormControlLabel
+                  control={
+                    <Checkbox size="small"
+                      sx={{
+                        '&.Mui-checked': {
+                          color: "#181C14",
+                        },
+                      }}
+                    />
+                  }
+                  label="Approve" />
+              </TableCell>
               <TableCell align="right">{job.image_hash}</TableCell>
-              <TableCell align="right">{job.status}</TableCell>
               <TableCell align="right">{formatCurrency(job.amount)}</TableCell>
             </TableRow>
           ))}
