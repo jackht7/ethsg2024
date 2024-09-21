@@ -66,6 +66,11 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
 
     // Add a new project
     function createProject(string memory _description, uint _amount) public {
+        // Check balance
+        require(IERC20(usdc).balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        // Check allowance
+        require(IERC20(usdc).allowance(msg.sender, address(this)) >= _amount, "Insufficient allowance");
+
         Project storage project = projects[nextProjectId];
         project.projectId = nextProjectId;
         project.description = _description;
@@ -168,20 +173,21 @@ contract Hook is ISPHook, WhitelistMananger, ReentrancyGuard {
         return (job.jobId, job.name, job.description, job.amount, job.metadata);
     }
 
-    function _finalizeJob(uint projectId, uint jobId) internal {
+    function _finalizeJob(uint projectId, uint jobId) public onlyOwner {
         require(projectId < nextProjectId, "Project does not exist.");
         Project storage project = projects[projectId];
         require(jobId < project.jobs.length, "Job does not exist.");
         Job storage job = project.jobs[jobId];
 
         // mint NFT to contractor
-        ISnaptureNFT(nft).mint(job.contractor);
+        string memory tokenUri = project.jobs[jobId].metadata;
+        ISnaptureNFT(nft).mint(job.contractor, projectId, jobId, tokenUri);
 
         // release fund to contractor
         IERC20(usdc).transfer(project.jobs[jobId].contractor, project.amount);
 
         // remove job from project
-        delete project.jobs[jobId];
+        // delete project.jobs[jobId];
     }
 
     function emergencyWithdraw(
